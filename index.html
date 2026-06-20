@@ -701,28 +701,38 @@ const liveEvents = [
   // ✅ WORKING — Euronews English (YouTube)
   { id: 7, emoji: "🇪🇺", sport: "News",  title: "Euronews — Live English",         meta: "Euronews · 24/7 European News",   badge: "live",     viewers: "Live",  type: "youtube", youtubeId: "zC0s4EBkrRQ" },
 
-  // Placeholder sports — swap youtubeId when events go live
-  { id: 8,  emoji: "⚽", sport: "Soccer",     title: "FIFA World Cup 2026",         meta: "Fox/YouTube — Goes live match day",  badge: "upcoming", viewers: null, time: "See Schedule", type: "youtube", youtubeId: "jfKfPfyJRdk" },
-  { id: 9,  emoji: "🎾", sport: "Tennis",     title: "Wimbledon 2026",              meta: "Wimbledon YouTube — Goes live",      badge: "upcoming", viewers: null, time: "See Schedule", type: "youtube", youtubeId: "jfKfPfyJRdk" },
-  { id: 10, emoji: "🏏", sport: "Cricket",    title: "ICC Cricket — Live Match",    meta: "ICC YouTube — Check for live ID",    badge: "upcoming", viewers: null, time: "See Schedule", type: "youtube", youtubeId: "jfKfPfyJRdk" },
+  // ✅ HLS Sports Channels
+  { id: 8,  emoji: "🏈", sport: "Sports",   title: "ESPN8 — The Ocho",            meta: "ESPN · 24/7 Live Sports",            badge: "live", viewers: "Live", type: "hls", hlsUrl: "https://d3b6q2ou5kp8ke.cloudfront.net/ESPNTheOcho.m3u8" },
+  { id: 9,  emoji: "⚽", sport: "Soccer",   title: "beIN Sports USA",              meta: "beIN Sports · 24/7 Soccer",          badge: "live", viewers: "Live", type: "hls", hlsUrl: "https://bein-xtra-bein.amagi.tv/playlist.m3u8" },
+  { id: 10, emoji: "🏆", sport: "Soccer",   title: "CBS Sports Golazo",            meta: "CBS Sports · 24/7 Soccer",           badge: "live", viewers: "Live", type: "hls", hlsUrl: "https://proped3fhg87.airspace-cdn.cbsivideo.com/golazo-live-dai/master/golazo-live-dai.m3u8" },
+  { id: 11, emoji: "🥊", sport: "MMA",      title: "Bellator MMA",                 meta: "Bellator · 24/7 Fight Sports",       badge: "live", viewers: "Live", type: "hls", hlsUrl: "https://d3b6q2ou5kp8ke.cloudfront.net/BellatorMMA.m3u8" },
+  { id: 12, emoji: "⛳", sport: "Golf",      title: "CCTV Golf & Tennis",           meta: "CCTV · 24/7 Golf & Tennis",          badge: "live", viewers: "Live", type: "hls", hlsUrl: "http://38.75.136.137:98/gslb/dsdqpub/gefwq.m3u8?auth=testpub" },
+  { id: 13, emoji: "⚽", sport: "Soccer",   title: "Alkass One",                   meta: "Alkass · 24/7 Football",             badge: "live", viewers: "Live", type: "hls", hlsUrl: "https://liveeu-gcp.alkassdigital.net/alkass1-p/main.m3u8" },
+  { id: 14, emoji: "⚽", sport: "Soccer",   title: "Alkass Two",                   meta: "Alkass · 24/7 Football",             badge: "live", viewers: "Live", type: "hls", hlsUrl: "https://liveeu-gcp.alkassdigital.net/alkass2-p/main.m3u8" },
+  { id: 15, emoji: "⚽", sport: "Soccer",   title: "Alkass Three",                 meta: "Alkass · 24/7 Football",             badge: "live", viewers: "Live", type: "hls", hlsUrl: "https://liveeu-gcp.alkassdigital.net/alkass3-p/main.m3u8" },
+  { id: 16, emoji: "⚽", sport: "Soccer",   title: "Alkass Four",                  meta: "Alkass · 24/7 Football",             badge: "live", viewers: "Live", type: "hls", hlsUrl: "https://liveeu-gcp.alkassdigital.net/alkass4-p/main.m3u8" },
+  { id: 17, emoji: "⚽", sport: "Soccer",   title: "Alkass Five",                  meta: "Alkass · 24/7 Football",             badge: "live", viewers: "Live", type: "hls", hlsUrl: "https://liveeu-gcp.alkassdigital.net/alkass5-p/main.m3u8" },
+  { id: 18, emoji: "🌍", sport: "Sports",   title: "Africa 24 Sport",              meta: "Africa 24 · 24/7 African Sports",    badge: "live", viewers: "Live", type: "hls", hlsUrl: "https://africa24.vedge.infomaniak.com/livecast/ik:africa24sport/manifest.m3u8" },
+  { id: 19, emoji: "⚽", sport: "Soccer",   title: "ESPN Deportes",                meta: "ESPN · 24/7 Spanish Sports",         badge: "live", viewers: "Live", type: "hls", hlsUrl: "http://origin.thetvapp.to/hls/espn-deportes/mono.m3u8" },
 ];
 
-const replays = [
-  { id: 11, emoji: "⚽", sport: "Soccer",     title: "Man City vs. Arsenal Replay", meta: "Premier League · Replay",  badge: "replay", type: "youtube", youtubeId: "jfKfPfyJRdk" },
-  { id: 12, emoji: "🏀", sport: "Basketball", title: "NBA Playoffs Highlights",     meta: "NBA YouTube · Replay",     badge: "replay", type: "youtube", youtubeId: "jfKfPfyJRdk" },
-  { id: 13, emoji: "🏈", sport: "Football",   title: "Super Bowl LVIX Full Match",  meta: "NFL · Feb 2026 · Replay",  badge: "replay", type: "youtube", youtubeId: "jfKfPfyJRdk" },
-  { id: 14, emoji: "🎾", sport: "Tennis",     title: "French Open Men's Final",     meta: "Grand Slam · Replay",      badge: "replay", type: "youtube", youtubeId: "jfKfPfyJRdk" },
-];
+const replays = [];
 
 const channels = [
-  { emoji: "🏟️", name: "ESPN 24/7", genre: "Sports" },
-  { emoji: "⚽", name: "Sky Sports", genre: "Soccer" },
-  { emoji: "📰", name: "CNN International", genre: "News" },
-  { emoji: "🏀", name: "NBA TV", genre: "Basketball" },
-  { emoji: "🎬", name: "TNT Sports", genre: "Sports" },
-  { emoji: "🌍", name: "BBC World", genre: "News" },
-  { emoji: "🎵", name: "MTV Live", genre: "Entertainment" },
-  { emoji: "🧒", name: "Cartoon Network", genre: "Kids" },
+  { emoji: "🏈", name: "ESPN8 The Ocho",       genre: "Sports",        hlsUrl: "https://d3b6q2ou5kp8ke.cloudfront.net/ESPNTheOcho.m3u8" },
+  { emoji: "⚽", name: "beIN Sports XTRA",      genre: "Soccer",        hlsUrl: "https://bein-xtra-bein.amagi.tv/playlist.m3u8" },
+  { emoji: "🏆", name: "CBS Sports Golazo",     genre: "Sports",        hlsUrl: "https://proped3fhg87.airspace-cdn.cbsivideo.com/golazo-live-dai/master/golazo-live-dai.m3u8" },
+  { emoji: "⚽", name: "Alkass One",            genre: "Soccer",        hlsUrl: "https://liveeu-gcp.alkassdigital.net/alkass1-p/main.m3u8" },
+  { emoji: "⚽", name: "Alkass Two",            genre: "Soccer",        hlsUrl: "https://liveeu-gcp.alkassdigital.net/alkass2-p/main.m3u8" },
+  { emoji: "⚽", name: "Alkass Three",          genre: "Soccer",        hlsUrl: "https://liveeu-gcp.alkassdigital.net/alkass3-p/main.m3u8" },
+  { emoji: "⚽", name: "Alkass Four",           genre: "Soccer",        hlsUrl: "https://liveeu-gcp.alkassdigital.net/alkass4-p/main.m3u8" },
+  { emoji: "⚽", name: "Alkass Five",           genre: "Soccer",        hlsUrl: "https://liveeu-gcp.alkassdigital.net/alkass5-p/main.m3u8" },
+  { emoji: "⚽", name: "Alkass Six",            genre: "Soccer",        hlsUrl: "https://liveeu-gcp.alkassdigital.net/alkass6-p/main.m3u8" },
+  { emoji: "⚽", name: "Alkass Seven",          genre: "Soccer",        hlsUrl: "https://liveeu-gcp.alkassdigital.net/alkass7-p/main.m3u8" },
+  { emoji: "🌍", name: "Africa 24 Sport",       genre: "Sports",        hlsUrl: "https://africa24.vedge.infomaniak.com/livecast/ik:africa24sport/manifest.m3u8" },
+  { emoji: "⛳", name: "CCTV Golf & Tennis",    genre: "Sports",        hlsUrl: "http://38.75.136.137:98/gslb/dsdqpub/gefwq.m3u8?auth=testpub" },
+  { emoji: "⚽", name: "ESPN Deportes",         genre: "Soccer",        hlsUrl: "http://origin.thetvapp.to/hls/espn-deportes/mono.m3u8" },
+  { emoji: "🥊", name: "Bellator MMA",          genre: "Sports",        hlsUrl: "https://d3b6q2ou5kp8ke.cloudfront.net/BellatorMMA.m3u8" },
 ];
 
 function playerUrl(item) {
@@ -778,7 +788,12 @@ function createCard(item) {
 function createChannel(ch) {
   const card = document.createElement('a');
   card.className = 'channel-card';
-  card.href = 'player.html';
+  const params = new URLSearchParams();
+  params.set('title', ch.name);
+  params.set('sport', ch.genre);
+  params.set('meta', ch.name + ' · 24/7 Live');
+  if (ch.hlsUrl) params.set('hls', ch.hlsUrl);
+  card.href = 'player.html?' + params.toString();
   card.innerHTML = `
     <div class="channel-icon">${ch.emoji}</div>
     <div class="channel-name">${ch.name}</div>

@@ -523,6 +523,14 @@
   }
   .modal-close:hover { border-color: var(--coral); color: var(--coral); }
 
+  .empty-state {
+    grid-column: 1 / -1;
+    color: var(--muted);
+    font-size: 14px;
+    padding: 32px 0;
+    text-align: center;
+  }
+
   @media (max-width: 640px) {
     nav { padding: 0 16px; }
     .nav-links { display: none; }
@@ -757,24 +765,113 @@ function createChannel(ch) {
   return card;
 }
 
-function renderAll() {
+
+
+// --- STATE ---
+let activeSport = 'all';
+let activeGenre = 'all';
+let searchQuery = '';
+
+// --- FILTER + SEARCH ENGINE ---
+function applyFilters() {
+  const q = searchQuery.toLowerCase();
+
+  // Live grid
+  const filteredLive = liveEvents.filter(item => {
+    const sportMatch = activeSport === 'all' || item.sport.toLowerCase().includes(activeSport);
+    const searchMatch = !q ||
+      item.title.toLowerCase().includes(q) ||
+      item.sport.toLowerCase().includes(q) ||
+      item.meta.toLowerCase().includes(q);
+    return sportMatch && searchMatch;
+  });
+
+  // Replay grid
+  const filteredReplays = replays.filter(item => {
+    const sportMatch = activeSport === 'all' || item.sport.toLowerCase().includes(activeSport);
+    const searchMatch = !q ||
+      item.title.toLowerCase().includes(q) ||
+      item.sport.toLowerCase().includes(q) ||
+      item.meta.toLowerCase().includes(q);
+    return sportMatch && searchMatch;
+  });
+
+  // Channel grid
+  const filteredChannels = channels.filter(ch => {
+    const genreMatch = activeGenre === 'all' || ch.genre.toLowerCase().includes(activeGenre);
+    const searchMatch = !q ||
+      ch.name.toLowerCase().includes(q) ||
+      ch.genre.toLowerCase().includes(q);
+    return genreMatch && searchMatch;
+  });
+
+  // Render
   const lg = document.getElementById('liveGrid');
   const rg = document.getElementById('replayGrid');
   const cg = document.getElementById('channelGrid');
   lg.innerHTML = '';
   rg.innerHTML = '';
   cg.innerHTML = '';
-  liveEvents.forEach(e => lg.appendChild(createCard(e)));
-  replays.forEach(e => rg.appendChild(createCard(e)));
-  channels.forEach(c => cg.appendChild(createChannel(c)));
+
+  if (filteredLive.length) {
+    filteredLive.forEach(e => lg.appendChild(createCard(e)));
+  } else {
+    lg.innerHTML = '<p class="empty-state">No live events match your search.</p>';
+  }
+
+  if (filteredReplays.length) {
+    filteredReplays.forEach(e => rg.appendChild(createCard(e)));
+  } else {
+    rg.innerHTML = '<p class="empty-state">No replays match your search.</p>';
+  }
+
+  if (filteredChannels.length) {
+    filteredChannels.forEach(c => cg.appendChild(createChannel(c)));
+  } else {
+    cg.innerHTML = '<p class="empty-state">No channels match your search.</p>';
+  }
+
+  // Update section counts
+  document.getElementById('liveCountBadge').textContent = filteredLive.length;
 }
 
+// --- PILL FILTERS ---
 function filterPills(el) {
   const parent = el.parentElement;
   parent.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
   el.classList.add('active');
+
+  const label = el.textContent.replace(/[^a-zA-Z]/g, '').toLowerCase();
+
+  if (parent.id === 'sportsFilter') {
+    activeSport = label === 'allsports' ? 'all' : label;
+  } else if (parent.id === 'genreFilter') {
+    activeGenre = label === 'allgenres' ? 'all' : label;
+  }
+
+  applyFilters();
 }
 
+// --- SEARCH ---
+function handleSearch() {
+  searchQuery = document.getElementById('searchInput').value.trim();
+  applyFilters();
+}
+
+document.getElementById('searchInput').addEventListener('input', () => {
+  searchQuery = document.getElementById('searchInput').value.trim();
+  applyFilters();
+});
+
+document.getElementById('searchInput').addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    document.getElementById('searchInput').value = '';
+    searchQuery = '';
+    applyFilters();
+  }
+});
+
+// --- MODAL ---
 function openModal(item) {
   document.getElementById('modalEmoji').textContent = item.emoji || '📺';
   document.getElementById('modalTitle').textContent = item.title;
@@ -787,15 +884,6 @@ function closeModal(e) {
     document.getElementById('modal').classList.remove('open');
   }
 }
-
-function handleSearch() {
-  const q = document.getElementById('searchInput').value.trim();
-  if (q) alert(`Searching for: "${q}"\n(Connect to a real stream source to show results.)`);
-}
-
-document.getElementById('searchInput').addEventListener('keydown', e => {
-  if (e.key === 'Enter') handleSearch();
-});
 
 // Animate live viewer count
 function jitterViewers() {
@@ -811,7 +899,7 @@ function jitterViewers() {
   });
 }
 
-renderAll();
+applyFilters();
 setInterval(jitterViewers, 3000);
 </script>
 </body>

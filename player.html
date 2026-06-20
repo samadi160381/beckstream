@@ -618,134 +618,23 @@
 
 <script>
 // ─── STREAM CATALOGUE ────────────────────────────────────
-// youtubeId: real YouTube live stream / video IDs
-// hlsUrl: direct .m3u8 URL (add your own)
-// iframeUrl: any embeddable URL
+// ✅ = real working public stream right now
 const catalogue = [
-  {
-    id: 1,
-    emoji: "⚽",
-    sport: "Soccer",
-    title: "La Liga — Real Madrid vs. Atletico",
-    league: "La Liga · Live",
-    live: true,
-    type: "youtube",
-    // ESPN FC live YouTube channel
-    youtubeId: "jfKfPfyJRdk",  // lofi hip hop fallback — replace with real live ID
-    viewers: "92.4k"
-  },
-  {
-    id: 2,
-    emoji: "🏀",
-    sport: "Basketball",
-    title: "NBA Finals — Lakers vs. Celtics",
-    league: "NBA Finals · Game 5 · Live",
-    live: true,
-    type: "youtube",
-    youtubeId: "jfKfPfyJRdk",
-    viewers: "141k"
-  },
-  {
-    id: 3,
-    emoji: "🎾",
-    sport: "Tennis",
-    title: "Wimbledon SF — Djokovic vs. Alcaraz",
-    league: "Wimbledon 2026 · Live",
-    live: true,
-    type: "youtube",
-    youtubeId: "jfKfPfyJRdk",
-    viewers: "58.1k"
-  },
-  {
-    id: 4,
-    emoji: "🏒",
-    sport: "Hockey",
-    title: "Stanley Cup Finals — Rangers vs. Oilers",
-    league: "NHL · Game 3 · Live",
-    live: true,
-    type: "youtube",
-    youtubeId: "jfKfPfyJRdk",
-    viewers: "34.7k"
-  },
-  {
-    id: 5,
-    emoji: "🏎",
-    sport: "F1",
-    title: "British GP — Qualifying",
-    league: "Formula 1 · Live",
-    live: true,
-    type: "youtube",
-    // F1 official YouTube sometimes embeds qualifying
-    youtubeId: "jfKfPfyJRdk",
-    viewers: "44.1k"
-  },
-  {
-    id: 6,
-    emoji: "⛳",
-    sport: "Golf",
-    title: "US Open — Final Round",
-    league: "USGA · Live",
-    live: true,
-    type: "youtube",
-    youtubeId: "jfKfPfyJRdk",
-    viewers: "19.3k"
-  },
-  {
-    id: 7,
-    emoji: "🥊",
-    sport: "MMA",
-    title: "UFC 316 Main Card",
-    league: "UFC · Pay-Per-View",
-    live: true,
-    type: "youtube",
-    youtubeId: "jfKfPfyJRdk",
-    viewers: "87.2k"
-  },
-  {
-    id: 8,
-    emoji: "🏈",
-    sport: "Football",
-    title: "Chiefs vs. Eagles — NFL Preseason",
-    league: "NFL Preseason · Upcoming",
-    live: false,
-    type: "youtube",
-    youtubeId: "jfKfPfyJRdk",
-    viewers: null
-  },
-  // ── DEMO: Real public streams ─────────────────────────
-  {
-    id: 9,
-    emoji: "🚀",
-    sport: "Space",
-    title: "NASA Live — Earth Views from ISS",
-    league: "NASA · 24/7 Live",
-    live: true,
-    type: "youtube",
-    youtubeId: "P9C25Un7xaM",   // NASA ISS live feed — real public stream
-    viewers: "Live"
-  },
-  {
-    id: 10,
-    emoji: "📺",
-    sport: "News",
-    title: "Bloomberg Markets — Live",
-    league: "Bloomberg TV · 24/7",
-    live: true,
-    type: "youtube",
-    youtubeId: "dp8PhLsUcFE",   // Bloomberg live — real
-    viewers: "Live"
-  },
-  {
-    id: 11,
-    emoji: "🌊",
-    sport: "Demo",
-    title: "HLS Demo Stream (Akamai)",
-    league: "HLS Test · Public",
-    live: true,
-    type: "hls",
-    hlsUrl: "https://multiplatform-f.akamaihd.net/i/multi/will/bunny/big_buck_bunny_,640x360_400,640x360_700,640x360_1000,950x540_1500,.f4v.csmil/master.m3u8",
-    viewers: "Demo"
-  },
+  { id: 1,  emoji: "🚀", sport: "Space",   title: "NASA TV — Live Coverage",          league: "NASA · Launches, ISS & Missions",     live: true,  type: "hls",     hlsUrl: "https://ntv1.akamaized.net/hls/live/2014075/NASA-NTV1-HLS/master.m3u8",                                                                                                                                                                                     viewers: "Live"  },
+  { id: 2,  emoji: "📈", sport: "News",    title: "Bloomberg Markets — Live",          league: "Bloomberg TV · 24/7",                 live: true,  type: "hls",     hlsUrl: "https://bloomberg-bloomberg-1-eu.rakuten.wurl.tv/playlist.m3u8",                                                                                                                                                                                                   viewers: "Live"  },
+  { id: 3,  emoji: "🌍", sport: "Space",   title: "NASA — Earth from the ISS",         league: "NASA YouTube · 24/7 Live",            live: true,  type: "youtube", youtubeId: "P9C25Un7xaM",                                                                                                                                                                                                                                                      viewers: "Live"  },
+  { id: 4,  emoji: "🎬", sport: "Demo",    title: "Apple HLS — Adaptive Bitrate Demo", league: "Apple CDN · HD Test Stream",          live: true,  type: "hls",     hlsUrl: "https://devstreaming-cdn.apple.com/videos/streaming/examples/img_bipbop_adv_example_fmp4/master.m3u8",                                                                                                                                                              viewers: "Demo"  },
+  { id: 5,  emoji: "📡", sport: "Demo",    title: "Akamai Live Test Stream",           league: "Akamai CDN · Public HLS",             live: true,  type: "hls",     hlsUrl: "https://cph-p2p-msl.akamaized.net/hls/live/2000341/test/master.m3u8",                                                                                                                                                                                               viewers: "Demo"  },
+  { id: 6,  emoji: "🎥", sport: "Film",    title: "Sintel — Blender Open Film",        league: "Blender Foundation · Free to Watch",  live: false, type: "hls",     hlsUrl: "https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8",                                                                                                                                                                                                   viewers: "Free"  },
+  { id: 7,  emoji: "🤖", sport: "Film",    title: "Tears of Steel — Blender Film",     league: "Blender Foundation · Sci-Fi Short",   live: false, type: "hls",     hlsUrl: "https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel.ism/.m3u8",                                                                                                                                                               viewers: "Free"  },
+  { id: 8,  emoji: "💹", sport: "News",    title: "Bloomberg TV — YouTube Live",       league: "Bloomberg · Markets & Finance",        live: true,  type: "youtube", youtubeId: "dp8PhLsUcFE",                                                                                                                                                                                                                                                      viewers: "Live"  },
+  { id: 9,  emoji: "🐰", sport: "Film",    title: "Big Buck Bunny — Blender Classic",  league: "Blender Foundation · Free Short",     live: false, type: "hls",     hlsUrl: "https://multiplatform-f.akamaihd.net/i/multi/will/bunny/big_buck_bunny_,640x360_400,640x360_700,640x360_1000,950x540_1500,.f4v.csmil/master.m3u8",                                                                                                                   viewers: "Free"  },
+  { id: 10, emoji: "🔊", sport: "Demo",    title: "Dolby Atmos & Vision Demo",         league: "Dolby · Premium A/V Test Stream",     live: false, type: "hls",     hlsUrl: "https://dolbyreference.blob.core.windows.net/public/AtmosDemoClips/dolby-atmos-and-vision-multichannel-audio.m3u8",                                                                                                                                                  viewers: "Demo"  },
+  // Placeholders — swap youtubeId when events go live on YouTube
+  { id: 11, emoji: "⚽", sport: "Soccer",  title: "FIFA World Cup 2026",               league: "Fox / YouTube — Add live ID",         live: false, type: "youtube", youtubeId: "jfKfPfyJRdk",                                                                                                                                                                                                                                                      viewers: null    },
+  { id: 12, emoji: "🎾", sport: "Tennis",  title: "Wimbledon 2026",                    league: "Wimbledon YouTube — Add live ID",     live: false, type: "youtube", youtubeId: "jfKfPfyJRdk",                                                                                                                                                                                                                                                      viewers: null    },
+  { id: 13, emoji: "🏎", sport: "F1",      title: "Formula 1 — Race Live",             league: "F1 YouTube — Add live ID",            live: false, type: "youtube", youtubeId: "jfKfPfyJRdk",                                                                                                                                                                                                                                                      viewers: null    },
+  { id: 14, emoji: "🏏", sport: "Cricket", title: "ICC Cricket — Live Match",          league: "ICC YouTube — Add live ID",           live: false, type: "youtube", youtubeId: "jfKfPfyJRdk",                                                                                                                                                                                                                                                      viewers: null    },
 ];
 
 // ─── STATE ───────────────────────────────────────────────

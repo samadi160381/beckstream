@@ -674,25 +674,65 @@
 </div>
 
 <script>
+// ─── STREAM CATALOGUE ─────────────────────────────────
+// type: 'youtube' = YouTube embed  |  type: 'hls' = direct .m3u8
+// Real working public streams marked with ✅
 const liveEvents = [
-  { id: 1,  emoji: "⚽", sport: "Soccer",     title: "Real Madrid vs. Barcelona",      meta: "La Liga · Matchday 38",         badge: "live",     viewers: "92.4k", youtubeId: "jfKfPfyJRdk" },
-  { id: 2,  emoji: "🏀", sport: "Basketball", title: "Lakers vs. Celtics",              meta: "NBA Finals · Game 5",            badge: "live",     viewers: "141k",  youtubeId: "jfKfPfyJRdk" },
-  { id: 3,  emoji: "🎾", sport: "Tennis",     title: "Djokovic vs. Alcaraz",            meta: "Wimbledon Semifinal",            badge: "live",     viewers: "58.1k", youtubeId: "jfKfPfyJRdk" },
-  { id: 4,  emoji: "🏒", sport: "Hockey",     title: "Rangers vs. Oilers",              meta: "Stanley Cup Finals · Game 3",   badge: "live",     viewers: "34.7k", youtubeId: "jfKfPfyJRdk" },
-  { id: 5,  emoji: "🥊", sport: "MMA",        title: "Jones vs. Aspinall",              meta: "UFC 316 · Main Event",           badge: "upcoming", viewers: null,    time: "Starts 8:00 PM", youtubeId: "jfKfPfyJRdk" },
-  { id: 6,  emoji: "⚾", sport: "Baseball",   title: "Yankees vs. Dodgers",             meta: "MLB Regular Season",             badge: "live",     viewers: "28.9k", youtubeId: "jfKfPfyJRdk" },
-  { id: 7,  emoji: "🏈", sport: "Football",   title: "Chiefs vs. Eagles",               meta: "NFL Preseason Week 1",           badge: "upcoming", viewers: null,    time: "Starts 7:30 PM", youtubeId: "jfKfPfyJRdk" },
-  { id: 8,  emoji: "🏊", sport: "Swimming",   title: "World Aquatics Championships",    meta: "200m Freestyle Final",           badge: "live",     viewers: "12.3k", youtubeId: "P9C25Un7xaM" },
-  // Real public streams
-  { id: 9,  emoji: "🚀", sport: "Space",      title: "NASA Live — Earth from the ISS",  meta: "NASA · 24/7 Live",              badge: "live",     viewers: "Live",  youtubeId: "P9C25Un7xaM" },
-  { id: 10, emoji: "📺", sport: "News",       title: "Bloomberg Markets Live",           meta: "Bloomberg TV · 24/7",           badge: "live",     viewers: "Live",  youtubeId: "dp8PhLsUcFE" },
+  // ✅ REAL — NASA TV Public (Akamai HLS, 24/7 live)
+  { id: 1,  emoji: "🚀", sport: "Space",   title: "NASA TV — Live Coverage",         meta: "NASA · 24/7 · Launches, ISS, Missions", badge: "live", viewers: "Live",
+    type: "hls", hlsUrl: "https://ntv1.akamaized.net/hls/live/2014075/NASA-NTV1-HLS/master.m3u8" },
+
+  // ✅ REAL — Bloomberg TV (Rakuten/Wurl free feed, 24/7)
+  { id: 2,  emoji: "📈", sport: "News",    title: "Bloomberg Markets — Live",         meta: "Bloomberg TV · 24/7 Business News",     badge: "live", viewers: "Live",
+    type: "hls", hlsUrl: "https://bloomberg-bloomberg-1-eu.rakuten.wurl.tv/playlist.m3u8" },
+
+  // ✅ REAL — NASA YouTube live (backup / ISS cam)
+  { id: 3,  emoji: "🌍", sport: "Space",   title: "NASA — Earth from the ISS",        meta: "NASA YouTube · 24/7 Live Feed",         badge: "live", viewers: "Live",
+    type: "youtube", youtubeId: "P9C25Un7xaM" },
+
+  // ✅ REAL — Apple HLS bipbop demo (adaptive bitrate test stream)
+  { id: 4,  emoji: "🎬", sport: "Demo",    title: "Apple HLS Demo — Adaptive Stream", meta: "Apple CDN · HD Test Stream",            badge: "live", viewers: "Demo",
+    type: "hls", hlsUrl: "https://devstreaming-cdn.apple.com/videos/streaming/examples/img_bipbop_adv_example_fmp4/master.m3u8" },
+
+  // ✅ REAL — Akamai live test stream
+  { id: 5,  emoji: "📡", sport: "Demo",    title: "Akamai Live Test Stream",          meta: "Akamai CDN · Public HLS",               badge: "live", viewers: "Demo",
+    type: "hls", hlsUrl: "https://cph-p2p-msl.akamaized.net/hls/live/2000341/test/master.m3u8" },
+
+  // ✅ REAL — Sintel (Blender Foundation open film, HLS)
+  { id: 6,  emoji: "🎥", sport: "Film",    title: "Sintel — Blender Open Film",       meta: "Blender Foundation · Free to Watch",   badge: "live", viewers: "Free",
+    type: "hls", hlsUrl: "https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8" },
+
+  // ✅ REAL — Tears of Steel (Blender, HLS via Unified Streaming)
+  { id: 7,  emoji: "🤖", sport: "Film",    title: "Tears of Steel — Blender Film",    meta: "Blender Foundation · Sci-Fi Short",    badge: "live", viewers: "Free",
+    type: "hls", hlsUrl: "https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel.ism/.m3u8" },
+
+  // ✅ REAL — Bloomberg YouTube live
+  { id: 8,  emoji: "💹", sport: "News",    title: "Bloomberg TV — YouTube Live",      meta: "Bloomberg · Markets & Finance",         badge: "live", viewers: "Live",
+    type: "youtube", youtubeId: "dp8PhLsUcFE" },
+
+  // Placeholder — replace youtubeId when events go live on YouTube
+  { id: 9,  emoji: "⚽", sport: "Soccer",  title: "FIFA World Cup 2026",              meta: "Fox / YouTube · Add live ID when live", badge: "upcoming", viewers: null, time: "Check Schedule",
+    type: "youtube", youtubeId: "jfKfPfyJRdk" },
+
+  { id: 10, emoji: "🎾", sport: "Tennis",  title: "Wimbledon 2026",                   meta: "Wimbledon YouTube · Add live ID",       badge: "upcoming", viewers: null, time: "Check Schedule",
+    type: "youtube", youtubeId: "jfKfPfyJRdk" },
 ];
 
 const replays = [
-  { id: 11, emoji: "⚽", sport: "Soccer",     title: "Man City vs. Arsenal",            meta: "Premier League · 2 hours ago",  badge: "replay", youtubeId: "jfKfPfyJRdk" },
-  { id: 12, emoji: "🏀", sport: "Basketball", title: "Warriors vs. Bucks",              meta: "NBA Playoffs · Game 4 · Yesterday", badge: "replay", youtubeId: "jfKfPfyJRdk" },
-  { id: 13, emoji: "🏈", sport: "Football",   title: "Super Bowl LVIX Full Match",      meta: "NFL · Feb 2026",                badge: "replay", youtubeId: "jfKfPfyJRdk" },
-  { id: 14, emoji: "🎾", sport: "Tennis",     title: "French Open Men's Final",         meta: "Grand Slam · 3 days ago",       badge: "replay", youtubeId: "jfKfPfyJRdk" },
+  // ✅ REAL — Big Buck Bunny (Akamai, multi-bitrate)
+  { id: 11, emoji: "🐰", sport: "Film",    title: "Big Buck Bunny — Blender Classic", meta: "Blender Foundation · Free Short Film", badge: "replay",
+    type: "hls", hlsUrl: "https://multiplatform-f.akamaihd.net/i/multi/will/bunny/big_buck_bunny_,640x360_400,640x360_700,640x360_1000,950x540_1500,.f4v.csmil/master.m3u8" },
+
+  // ✅ REAL — Dolby Atmos demo (HLS)
+  { id: 12, emoji: "🔊", sport: "Demo",    title: "Dolby Atmos & Vision Demo",        meta: "Dolby · Audio/Video Test Stream",       badge: "replay",
+    type: "hls", hlsUrl: "https://dolbyreference.blob.core.windows.net/public/AtmosDemoClips/dolby-atmos-and-vision-multichannel-audio.m3u8" },
+
+  // Placeholder replays — replace with real YouTube IDs of past events
+  { id: 13, emoji: "⚽", sport: "Soccer",  title: "Man City vs. Arsenal Replay",      meta: "Premier League · Add YouTube ID",       badge: "replay",
+    type: "youtube", youtubeId: "jfKfPfyJRdk" },
+
+  { id: 14, emoji: "🏀", sport: "Basketball", title: "NBA Playoffs Highlights",       meta: "NBA YouTube · Add YouTube ID",          badge: "replay",
+    type: "youtube", youtubeId: "jfKfPfyJRdk" },
 ];
 
 const channels = [
@@ -709,10 +749,14 @@ const channels = [
 function playerUrl(item) {
   const base = 'player.html';
   const params = new URLSearchParams();
-  if (item.youtubeId) params.set('yt', item.youtubeId);
   if (item.title) params.set('title', item.title);
   if (item.sport) params.set('sport', item.sport);
   if (item.meta) params.set('meta', item.meta);
+  if (item.type === 'hls' && item.hlsUrl) {
+    params.set('hls', item.hlsUrl);
+  } else if (item.youtubeId) {
+    params.set('yt', item.youtubeId);
+  }
   return base + '?' + params.toString();
 }
 

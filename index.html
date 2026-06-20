@@ -8,537 +8,109 @@
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
   :root {
-    --bg: #0a0e1a;
-    --surface: #111827;
-    --surface2: #1a2236;
-    --border: #1f2d45;
-    --cyan: #00d4ff;
-    --cyan-dim: rgba(0, 212, 255, 0.12);
-    --coral: #ff4757;
-    --green: #2ed573;
-    --text: #e8edf5;
-    --muted: #8892a4;
-    --label: #4a5568;
+    --bg: #0a0e1a; --surface: #111827; --surface2: #1a2236; --border: #1f2d45;
+    --cyan: #00d4ff; --cyan-dim: rgba(0,212,255,0.12); --coral: #ff4757;
+    --green: #2ed573; --text: #e8edf5; --muted: #8892a4; --label: #4a5568;
   }
-
   html { scroll-behavior: smooth; }
-
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'Inter', sans-serif;
-    font-size: 15px;
-    line-height: 1.6;
-    min-height: 100vh;
-  }
+  body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; font-size: 15px; line-height: 1.6; min-height: 100vh; }
 
   /* NAV */
   nav {
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 32px;
-    height: 60px;
-    background: rgba(10, 14, 26, 0.92);
-    backdrop-filter: blur(12px);
+    position: sticky; top: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 24px; height: 58px;
+    background: rgba(10,14,26,0.96); backdrop-filter: blur(12px);
     border-bottom: 1px solid var(--border);
   }
-
-  .nav-logo {
-    font-family: 'Space Grotesk', sans-serif;
-    font-weight: 700;
-    font-size: 20px;
-    color: var(--cyan);
-    text-decoration: none;
-    letter-spacing: -0.5px;
-  }
-
+  .nav-logo { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 20px; color: var(--cyan); text-decoration: none; letter-spacing: -0.5px; }
   .nav-logo span { color: var(--text); }
-
-  .nav-links {
-    display: flex;
-    gap: 28px;
-    list-style: none;
-  }
-
-  .nav-links a {
-    color: var(--muted);
-    text-decoration: none;
-    font-size: 14px;
-    font-weight: 500;
-    transition: color 0.2s;
-  }
-
+  .nav-links { display: flex; gap: 24px; list-style: none; }
+  .nav-links a { color: var(--muted); text-decoration: none; font-size: 14px; font-weight: 500; transition: color 0.2s; }
   .nav-links a:hover { color: var(--text); }
-
   .nav-links .active { color: var(--cyan); }
-
-  .nav-right { display: flex; gap: 12px; align-items: center; }
-
-  .btn-ghost {
-    background: none;
-    border: 1px solid var(--border);
-    color: var(--muted);
-    padding: 6px 16px;
-    border-radius: 6px;
-    font-size: 13px;
-    cursor: pointer;
-    font-family: 'Inter', sans-serif;
-    transition: all 0.2s;
-  }
+  .nav-right { display: flex; gap: 10px; align-items: center; }
+  .btn-ghost { background: none; border: 1px solid var(--border); color: var(--muted); padding: 6px 14px; border-radius: 6px; font-size: 13px; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.2s; text-decoration: none; }
   .btn-ghost:hover { border-color: var(--cyan); color: var(--cyan); }
 
   /* HERO */
-  .hero {
-    padding: 56px 32px 40px;
-    max-width: 1200px;
-    margin: 0 auto;
-  }
+  .hero { padding: 48px 24px 36px; max-width: 1200px; margin: 0 auto; }
+  .hero-badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(255,71,87,0.1); border: 1px solid rgba(255,71,87,0.3); color: var(--coral); font-size: 12px; font-weight: 600; letter-spacing: 1px; padding: 4px 12px; border-radius: 100px; margin-bottom: 18px; text-transform: uppercase; }
+  .live-dot { width: 6px; height: 6px; background: var(--coral); border-radius: 50%; position: relative; display: inline-block; }
+  .live-dot::after { content: ''; position: absolute; inset: -2px; border-radius: 50%; border: 1.5px solid var(--coral); animation: radar 1.4s ease-out infinite; }
+  @keyframes radar { 0% { opacity: 0.8; transform: scale(1); } 100% { opacity: 0; transform: scale(2.4); } }
+  .hero h1 { font-family: 'Space Grotesk', sans-serif; font-size: clamp(30px, 5vw, 50px); font-weight: 700; line-height: 1.1; letter-spacing: -1.5px; margin-bottom: 12px; }
+  .hero h1 em { font-style: normal; color: var(--cyan); }
+  .hero p { color: var(--muted); font-size: 16px; max-width: 500px; margin-bottom: 28px; }
 
-  .hero-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    background: rgba(255, 71, 87, 0.1);
-    border: 1px solid rgba(255, 71, 87, 0.3);
-    color: var(--coral);
-    font-size: 12px;
-    font-weight: 600;
-    letter-spacing: 1px;
-    padding: 4px 12px;
-    border-radius: 100px;
-    margin-bottom: 20px;
-    text-transform: uppercase;
-  }
-
-  .live-dot {
-    width: 7px;
-    height: 7px;
-    background: var(--coral);
-    border-radius: 50%;
-    position: relative;
-  }
-
-  .live-dot::after {
-    content: '';
-    position: absolute;
-    inset: -3px;
-    border-radius: 50%;
-    border: 1.5px solid var(--coral);
-    animation: radar 1.4s ease-out infinite;
-  }
-
-  @keyframes radar {
-    0% { opacity: 0.8; transform: scale(1); }
-    100% { opacity: 0; transform: scale(2.2); }
-  }
-
-  .hero h1 {
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: clamp(32px, 5vw, 52px);
-    font-weight: 700;
-    line-height: 1.1;
-    letter-spacing: -1.5px;
-    margin-bottom: 14px;
-  }
-
-  .hero h1 em {
-    font-style: normal;
-    color: var(--cyan);
-  }
-
-  .hero p {
-    color: var(--muted);
-    font-size: 17px;
-    max-width: 520px;
-    margin-bottom: 32px;
-  }
-
-  /* SEARCH BAR */
-  .search-bar {
-    display: flex;
-    gap: 10px;
-    max-width: 600px;
-    margin-bottom: 48px;
-  }
-
-  .search-bar input {
-    flex: 1;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    color: var(--text);
-    padding: 11px 18px;
-    border-radius: 8px;
-    font-size: 14px;
-    font-family: 'Inter', sans-serif;
-    outline: none;
-    transition: border-color 0.2s;
-  }
-
+  /* SEARCH */
+  .search-bar { display: flex; gap: 8px; max-width: 580px; margin-bottom: 40px; }
+  .search-bar input { flex: 1; background: var(--surface); border: 1px solid var(--border); color: var(--text); padding: 11px 16px; border-radius: 8px; font-size: 14px; font-family: 'Inter', sans-serif; outline: none; transition: border-color 0.2s; }
   .search-bar input::placeholder { color: var(--label); }
   .search-bar input:focus { border-color: var(--cyan); }
-
-  .btn-primary {
-    background: var(--cyan);
-    color: #0a0e1a;
-    border: none;
-    padding: 11px 22px;
-    border-radius: 8px;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    font-family: 'Inter', sans-serif;
-    transition: opacity 0.2s;
-    white-space: nowrap;
-  }
+  .btn-primary { background: var(--cyan); color: #0a0e1a; border: none; padding: 11px 20px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif; transition: opacity 0.2s; white-space: nowrap; }
   .btn-primary:hover { opacity: 0.88; }
 
   /* STATS */
-  .stats-row {
-    display: flex;
-    gap: 40px;
-    padding-bottom: 48px;
-    border-bottom: 1px solid var(--border);
-  }
-
+  .stats-row { display: flex; gap: 36px; padding-bottom: 40px; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
   .stat-item { display: flex; flex-direction: column; gap: 2px; }
-
-  .stat-num {
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: 26px;
-    font-weight: 700;
-    color: var(--text);
-  }
-
-  .stat-label { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
+  .stat-num { font-family: 'Space Grotesk', sans-serif; font-size: 24px; font-weight: 700; }
+  .stat-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
 
   /* MAIN */
-  main {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 32px 80px;
-  }
-
-  /* SECTION */
-  .section { margin-top: 52px; }
-
-  .section-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 24px;
-  }
-
-  .section-title {
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: 20px;
-    font-weight: 600;
-    letter-spacing: -0.3px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-
-  .section-count {
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    color: var(--muted);
-    font-size: 12px;
-    font-weight: 500;
-    padding: 2px 9px;
-    border-radius: 100px;
-  }
-
-  .section-link {
-    color: var(--cyan);
-    font-size: 13px;
-    text-decoration: none;
-    font-weight: 500;
-  }
+  main { max-width: 1200px; margin: 0 auto; padding: 0 24px 80px; }
+  .section { margin-top: 48px; }
+  .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+  .section-title { font-family: 'Space Grotesk', sans-serif; font-size: 20px; font-weight: 600; letter-spacing: -0.3px; display: flex; align-items: center; gap: 10px; }
+  .section-count { background: var(--surface2); border: 1px solid var(--border); color: var(--muted); font-size: 12px; font-weight: 500; padding: 2px 9px; border-radius: 100px; }
+  .section-link { color: var(--cyan); font-size: 13px; text-decoration: none; font-weight: 500; }
   .section-link:hover { text-decoration: underline; }
 
-  /* FILTER PILLS */
-  .filter-pills {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-    margin-bottom: 20px;
-  }
-
-  .pill {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    color: var(--muted);
-    padding: 5px 14px;
-    border-radius: 100px;
-    font-size: 13px;
-    cursor: pointer;
-    font-family: 'Inter', sans-serif;
-    transition: all 0.15s;
-  }
+  /* PILLS */
+  .filter-pills { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 18px; }
+  .pill { background: var(--surface); border: 1px solid var(--border); color: var(--muted); padding: 5px 14px; border-radius: 100px; font-size: 13px; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.15s; }
   .pill:hover { border-color: var(--cyan); color: var(--cyan); }
   .pill.active { background: var(--cyan-dim); border-color: var(--cyan); color: var(--cyan); }
 
   /* CARD GRID */
-  .card-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-    gap: 16px;
-  }
+  .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 14px; }
+  .stream-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; cursor: pointer; transition: border-color 0.2s, box-shadow 0.2s, transform 0.15s; text-decoration: none; color: inherit; display: block; }
+  .stream-card:hover { border-color: rgba(0,212,255,0.4); box-shadow: 0 0 0 1px rgba(0,212,255,0.1), 0 8px 28px rgba(0,0,0,0.4); transform: translateY(-2px); }
+  .card-thumb { position: relative; aspect-ratio: 16/9; background: var(--surface2); overflow: hidden; }
+  .thumb-fallback { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 36px; }
+  .badge { position: absolute; top: 10px; left: 10px; font-size: 10px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; padding: 3px 8px; border-radius: 4px; }
+  .badge-live { background: var(--coral); color: #fff; display: flex; align-items: center; gap: 5px; }
+  .badge-upcoming { background: rgba(0,0,0,0.7); color: var(--muted); border: 1px solid var(--border); }
+  .badge-replay { background: rgba(0,0,0,0.7); color: var(--cyan); border: 1px solid rgba(0,212,255,0.3); }
+  .viewer-count { position: absolute; bottom: 8px; right: 8px; background: rgba(0,0,0,0.75); color: #fff; font-size: 11px; padding: 2px 7px; border-radius: 4px; }
+  .card-body { padding: 12px 14px; }
+  .card-sport { font-size: 11px; color: var(--cyan); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+  .card-title { font-family: 'Space Grotesk', sans-serif; font-size: 14px; font-weight: 600; line-height: 1.3; margin-bottom: 6px; }
+  .card-meta { font-size: 12px; color: var(--muted); }
+  .empty-state { grid-column: 1/-1; color: var(--muted); font-size: 14px; padding: 32px 0; text-align: center; }
 
-  .stream-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    overflow: hidden;
-    cursor: pointer;
-    transition: border-color 0.2s, box-shadow 0.2s, transform 0.15s;
-    text-decoration: none;
-    color: inherit;
-    display: block;
-  }
-
-  .stream-card:hover {
-    border-color: rgba(0, 212, 255, 0.4);
-    box-shadow: 0 0 0 1px rgba(0, 212, 255, 0.12), 0 8px 32px rgba(0, 0, 0, 0.4);
-    transform: translateY(-2px);
-  }
-
-  .card-thumb {
-    position: relative;
-    aspect-ratio: 16 / 9;
-    background: var(--surface2);
-    overflow: hidden;
-  }
-
-  .card-thumb img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-  }
-
-  .card-thumb .thumb-fallback {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 36px;
-  }
-
-  .badge {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: 0.8px;
-    text-transform: uppercase;
-    padding: 3px 8px;
-    border-radius: 4px;
-  }
-
-  .badge-live {
-    background: var(--coral);
-    color: #fff;
-    display: flex;
-    align-items: center;
-    gap: 5px;
-  }
-
-  .badge-live .live-dot { width: 5px; height: 5px; }
-  .badge-live .live-dot::after { inset: -2px; }
-
-  .badge-upcoming { background: rgba(0, 0, 0, 0.7); color: var(--muted); border: 1px solid var(--border); }
-  .badge-replay { background: rgba(0, 0, 0, 0.7); color: var(--cyan); border: 1px solid rgba(0, 212, 255, 0.3); }
-
-  .viewer-count {
-    position: absolute;
-    bottom: 10px;
-    right: 10px;
-    background: rgba(0,0,0,0.75);
-    color: #fff;
-    font-size: 11px;
-    padding: 2px 8px;
-    border-radius: 4px;
-    display: flex;
-    align-items: center;
-    gap: 4px;
-  }
-
-  .card-body { padding: 14px 16px; }
-
-  .card-sport {
-    font-size: 11px;
-    color: var(--cyan);
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    margin-bottom: 5px;
-  }
-
-  .card-title {
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: 15px;
-    font-weight: 600;
-    line-height: 1.3;
-    margin-bottom: 8px;
-    letter-spacing: -0.2px;
-  }
-
-  .card-meta {
-    display: flex;
-    justify-content: space-between;
-    font-size: 12px;
-    color: var(--muted);
-  }
-
-  /* CHANNEL CARD */
-  .channel-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-    gap: 12px;
-  }
-
-  .channel-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 20px 16px;
-    cursor: pointer;
-    transition: border-color 0.2s, transform 0.15s;
-    text-align: center;
-    text-decoration: none;
-    color: inherit;
-    display: block;
-  }
-
-  .channel-card:hover {
-    border-color: rgba(0, 212, 255, 0.4);
-    transform: translateY(-2px);
-  }
-
-  .channel-icon { font-size: 32px; margin-bottom: 10px; }
-
-  .channel-name {
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: 14px;
-    font-weight: 600;
-    margin-bottom: 4px;
-  }
-
-  .channel-genre { font-size: 12px; color: var(--muted); }
-
-  .channel-status {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    margin-top: 10px;
-    font-size: 11px;
-    color: var(--green);
-    font-weight: 600;
-  }
-
-  .online-dot {
-    width: 6px; height: 6px;
-    background: var(--green);
-    border-radius: 50%;
-    position: relative;
-  }
-
-  .online-dot::after {
-    content: '';
-    position: absolute;
-    inset: -2px;
-    border-radius: 50%;
-    border: 1px solid var(--green);
-    animation: radar 1.6s ease-out infinite;
-  }
+  /* CHANNEL GRID */
+  .channel-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; }
+  .channel-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 18px 14px; cursor: pointer; transition: border-color 0.2s, transform 0.15s; text-align: center; text-decoration: none; color: inherit; display: block; }
+  .channel-card:hover { border-color: rgba(0,212,255,0.4); transform: translateY(-2px); }
+  .channel-icon { font-size: 30px; margin-bottom: 8px; }
+  .channel-name { font-family: 'Space Grotesk', sans-serif; font-size: 13px; font-weight: 600; margin-bottom: 3px; }
+  .channel-genre { font-size: 11px; color: var(--muted); }
+  .channel-status { display: inline-flex; align-items: center; gap: 5px; margin-top: 8px; font-size: 11px; color: var(--green); font-weight: 600; }
+  .online-dot { width: 6px; height: 6px; background: var(--green); border-radius: 50%; position: relative; }
+  .online-dot::after { content: ''; position: absolute; inset: -2px; border-radius: 50%; border: 1px solid var(--green); animation: radar 1.6s ease-out infinite; }
 
   /* FOOTER */
-  footer {
-    border-top: 1px solid var(--border);
-    padding: 28px 32px;
-    text-align: center;
-    font-size: 13px;
-    color: var(--label);
-  }
-
-  footer a { color: var(--muted); text-decoration: none; margin: 0 12px; }
+  footer { border-top: 1px solid var(--border); padding: 28px 24px; text-align: center; font-size: 13px; color: var(--label); }
+  footer a { color: var(--muted); text-decoration: none; margin: 0 10px; }
   footer a:hover { color: var(--cyan); }
 
-  /* MODAL */
-  .modal-overlay {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.8);
-    z-index: 200;
-    align-items: center;
-    justify-content: center;
-    backdrop-filter: blur(4px);
-  }
-
-  .modal-overlay.open { display: flex; }
-
-  .modal {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    width: 90%;
-    max-width: 700px;
-    overflow: hidden;
-  }
-
-  .modal-video {
-    aspect-ratio: 16/9;
-    background: #000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 64px;
-  }
-
-  .modal-info { padding: 20px 24px; }
-  .modal-info h2 { font-family: 'Space Grotesk', sans-serif; font-size: 20px; margin-bottom: 6px; }
-  .modal-info p { color: var(--muted); font-size: 14px; }
-  .modal-close {
-    float: right;
-    background: none;
-    border: 1px solid var(--border);
-    color: var(--muted);
-    padding: 6px 14px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-family: 'Inter', sans-serif;
-    margin-top: 12px;
-    font-size: 13px;
-    transition: all 0.2s;
-  }
-  .modal-close:hover { border-color: var(--coral); color: var(--coral); }
-
-  .empty-state {
-    grid-column: 1 / -1;
-    color: var(--muted);
-    font-size: 14px;
-    padding: 32px 0;
-    text-align: center;
-  }
-
   @media (max-width: 640px) {
-    nav { padding: 0 16px; }
     .nav-links { display: none; }
-    .hero, main { padding-left: 16px; padding-right: 16px; }
-    .stats-row { gap: 24px; flex-wrap: wrap; }
+    .stats-row { gap: 20px; }
     .search-bar { flex-direction: column; }
   }
-
   @media (prefers-reduced-motion: reduce) {
     .live-dot::after, .online-dot::after { animation: none; }
     .stream-card:hover, .channel-card:hover { transform: none; }
@@ -553,99 +125,58 @@
     <li><a href="index.html" class="active">Streams</a></li>
     <li><a href="multiview.html">MultiView</a></li>
     <li><a href="schedule.html">Schedule</a></li>
-    <li><a href="#">Channels</a></li>
   </ul>
   <div class="nav-right">
-    <ul class="nav-links" style="display:flex;gap:28px;list-style:none;margin-right:16px;">
-      <li><a href="index.html" style="color:var(--cyan);text-decoration:none;font-size:14px;font-weight:500;">Streams</a></li>
-      <li><a href="multiview.html" style="color:var(--muted);text-decoration:none;font-size:14px;font-weight:500;">MultiView</a></li>
-      <li><a href="schedule.html" style="color:var(--muted);text-decoration:none;font-size:14px;font-weight:500;">Schedule</a></li>
-      <li><a href="#" style="color:var(--muted);text-decoration:none;font-size:14px;font-weight:500;">Channels</a></li>
-    </ul>
-    <button class="btn-ghost">Discord</button>
+    <a href="#" class="btn-ghost">Discord</a>
   </div>
 </nav>
 
 <div class="hero">
-  <div class="hero-badge">
-    <span class="live-dot"></span>
-    47 streams live now
-  </div>
+  <div class="hero-badge"><span class="live-dot"></span> 7 streams live now</div>
   <h1>Watch Live Streams<br><em>For Free</em></h1>
-  <p>Sports, events, 24/7 channels — no subscriptions, no login, no nonsense.</p>
-
+  <p>News, space, sports & more — no subscriptions, no login, no nonsense.</p>
   <div class="search-bar">
-    <input type="text" placeholder="Search sports, teams, events…" id="searchInput">
+    <input type="text" placeholder="Search streams, sports, events…" id="searchInput">
     <button class="btn-primary" onclick="handleSearch()">Search</button>
   </div>
-
   <div class="stats-row">
-    <div class="stat-item">
-      <span class="stat-num" id="liveCount">47</span>
-      <span class="stat-label">Live now</span>
-    </div>
-    <div class="stat-item">
-      <span class="stat-num">120+</span>
-      <span class="stat-label">Replays</span>
-    </div>
-    <div class="stat-item">
-      <span class="stat-num">38</span>
-      <span class="stat-label">24/7 Channels</span>
-    </div>
-    <div class="stat-item">
-      <span class="stat-num">Free</span>
-      <span class="stat-label">No login needed</span>
-    </div>
+    <div class="stat-item"><span class="stat-num">7</span><span class="stat-label">Live now</span></div>
+    <div class="stat-item"><span class="stat-num">14</span><span class="stat-label">Total streams</span></div>
+    <div class="stat-item"><span class="stat-num">8</span><span class="stat-label">Channels</span></div>
+    <div class="stat-item"><span class="stat-num">Free</span><span class="stat-label">No login needed</span></div>
   </div>
 </div>
 
 <main>
 
-  <!-- LIVE EVENTS -->
   <div class="section">
     <div class="section-header">
-      <h2 class="section-title">
-        Live &amp; Upcoming
-        <span class="section-count" id="liveCountBadge">8</span>
-      </h2>
-      <a href="#" class="section-link">View all →</a>
+      <h2 class="section-title">Live &amp; Upcoming <span class="section-count" id="liveCountBadge">10</span></h2>
+      <a href="schedule.html" class="section-link">View schedule →</a>
     </div>
-
     <div class="filter-pills" id="sportsFilter">
       <button class="pill active" onclick="filterPills(this)">All Sports</button>
       <button class="pill" onclick="filterPills(this)">⚽ Soccer</button>
-      <button class="pill" onclick="filterPills(this)">🏀 Basketball</button>
-      <button class="pill" onclick="filterPills(this)">🏈 Football</button>
       <button class="pill" onclick="filterPills(this)">🎾 Tennis</button>
-      <button class="pill" onclick="filterPills(this)">🏒 Hockey</button>
-      <button class="pill" onclick="filterPills(this)">⚾ Baseball</button>
-      <button class="pill" onclick="filterPills(this)">🥊 MMA</button>
+      <button class="pill" onclick="filterPills(this)">🏏 Cricket</button>
+      <button class="pill" onclick="filterPills(this)">📰 News</button>
+      <button class="pill" onclick="filterPills(this)">🚀 Space</button>
     </div>
-
     <div class="card-grid" id="liveGrid"></div>
   </div>
 
-  <!-- REPLAYS -->
   <div class="section">
     <div class="section-header">
-      <h2 class="section-title">
-        Event Replays
-        <span class="section-count">24</span>
-      </h2>
+      <h2 class="section-title">Event Replays <span class="section-count">4</span></h2>
       <a href="#" class="section-link">View all →</a>
     </div>
     <div class="card-grid" id="replayGrid"></div>
   </div>
 
-  <!-- 24/7 CHANNELS -->
   <div class="section">
     <div class="section-header">
-      <h2 class="section-title">
-        24/7 Channels
-        <span class="section-count">38</span>
-      </h2>
+      <h2 class="section-title">24/7 Channels <span class="section-count">8</span></h2>
     </div>
-
     <div class="filter-pills" id="genreFilter">
       <button class="pill active" onclick="filterPills(this)">All Genres</button>
       <button class="pill" onclick="filterPills(this)">Sports</button>
@@ -653,7 +184,6 @@
       <button class="pill" onclick="filterPills(this)">Entertainment</button>
       <button class="pill" onclick="filterPills(this)">Kids</button>
     </div>
-
     <div class="channel-grid" id="channelGrid"></div>
   </div>
 
@@ -661,124 +191,59 @@
 
 <footer>
   <p style="margin-bottom:10px;">
-    <a href="#">Streams</a>
-    <a href="#">MultiView</a>
-    <a href="#">Schedule</a>
+    <a href="index.html">Streams</a>
+    <a href="multiview.html">MultiView</a>
+    <a href="schedule.html">Schedule</a>
     <a href="#">Donate</a>
     <a href="#">Discord</a>
-    <a href="#">Mirrors</a>
   </p>
-  <p>© 2026 BeckStream. Free · No Login · No BS</p>
+  <p>&copy; 2026 BeckStream &middot; Free &middot; No Login &middot; No BS</p>
 </footer>
 
-
-
 <script>
-// ─── STREAM CATALOGUE ──────────────────────────────────
-// All YouTube embeds — the only method that works in browsers without CORS issues.
-// To add a stream: find the YouTube live video, copy the ID from the URL, paste below.
-// Example: youtube.com/watch?v=ABC123  →  youtubeId: "ABC123"
-
+// ── DATA ─────────────────────────────────────────────────
 const liveEvents = [
-  // ✅ HLS News Channels
-  { id: 1,  emoji: "📡", sport: "News",   title: "NASA TV — Public",             meta: "NASA · 24/7 Live",                   badge: "live", viewers: "Live", type: "hls", hlsUrl: "https://ntv1.akamaized.net/hls/live/2014075/NASA-NTV1-HLS/master_2000.m3u8" },
-  { id: 2,  emoji: "📰", sport: "News",   title: "CBS News",                     meta: "CBS · 24/7 US News",                 badge: "live", viewers: "Live", type: "hls", hlsUrl: "https://cbsnews.akamaized.net/hls/live/2020607/cbsnlineup_8/master.m3u8" },
-  { id: 3,  emoji: "📺", sport: "News",   title: "NBC News Now",                 meta: "NBC · 24/7 US News",                 badge: "live", viewers: "Live", type: "hls", hlsUrl: "http://dai2.xumo.com/xumocdn/p=roku/amagi_hls_data_xumo1212A-xumo-nbcnewsnow/CDN/playlist.m3u8" },
-  { id: 4,  emoji: "🌍", sport: "News",   title: "Reuters TV",                   meta: "Reuters · 24/7 World News",          badge: "live", viewers: "Live", type: "hls", hlsUrl: "https://reuters-reutersnow-1-eu.rakuten.wurl.tv/playlist.m3u8" },
-  { id: 5,  emoji: "🔴", sport: "News",   title: "CNN",                          meta: "CNN · 24/7 Breaking News",           badge: "live", viewers: "Live", type: "hls", hlsUrl: "https://tve-live-lln.warnermediacdn.com/hls/live/586495/cnngo/cnn_slate/VIDEO_0_3564000.m3u8" },
-  { id: 6,  emoji: "📈", sport: "News",   title: "Bloomberg TV",                 meta: "Bloomberg · 24/7 Markets",           badge: "live", viewers: "Live", type: "hls", hlsUrl: "https://bloomberg.com/media-manifest/streams/us.m3u8" },
-  { id: 7,  emoji: "📰", sport: "News",   title: "DW News — Live",               meta: "Deutsche Welle · 24/7 English",      badge: "live", viewers: "Live", type: "youtube", youtubeId: "mGnFOVMX2xQ" },
-  { id: 28, emoji: "🌍", sport: "News",   title: "Al Jazeera English — Live",    meta: "Al Jazeera · 24/7 World News",       badge: "live", viewers: "Live", type: "youtube", youtubeId: "h3MuIUNCCLI" },
-
-  // ✅ HLS Sports Channels
-  { id: 29, emoji: "🏟️", sport: "Sports", title: "Stadium",                      meta: "Stadium · 24/7 Live Sports",         badge: "live", viewers: "Live", type: "hls", hlsUrl: "https://bcovlive-a.akamaihd.net/e64d564b9275484f85981d8c146fb915/us-east-1/5994000126001/profile_1/976f34cf5a614518b7b539cbf9812080/chunklist_ssaiV.m3u8" },
-  { id: 8,  emoji: "⚽", sport: "Soccer",   title: "beIN Sports XTRA",             meta: "beIN Sports · 24/7 Soccer",          badge: "live", viewers: "Live", type: "hls", hlsUrl: "https://bein-xtra-bein.amagi.tv/playlist.m3u8" },
-  { id: 9,  emoji: "⚽", sport: "Soccer",   title: "beIN Sports en Español",        meta: "beIN Sports · 24/7 Soccer Spanish",  badge: "live", viewers: "Live", type: "hls", hlsUrl: "https://dc1644a9jazgj.cloudfront.net/beIN_Sports_Xtra_Espanol.m3u8" },
-  { id: 10, emoji: "🏆", sport: "Soccer",   title: "CBS Sports Golazo",             meta: "CBS Sports · 24/7 Soccer",           badge: "live", viewers: "Live", type: "hls", hlsUrl: "https://proped3fhg87.airspace-cdn.cbsivideo.com/golazo-live-dai/master/golazo-live-dai.m3u8" },
-  { id: 11, emoji: "⚽", sport: "Soccer",   title: "FIFA+ US",                      meta: "FIFA · 24/7 Official Channel",       badge: "live", viewers: "Live", type: "hls", hlsUrl: "https://d2w9q46ikgrcwx.cloudfront.net/v1/master/3722c60a815c199d9c0ef36c5b73da68a62b09d1/cc-of5cbk3sav3w5/v1/sysdata_s_p_a_fifa_7/samsungheadend_us/latest/main/hls/playlist.m3u8" },
-  { id: 12, emoji: "⚽", sport: "Soccer",   title: "Alkass One",                    meta: "Alkass · 24/7 Football Qatar",       badge: "live", viewers: "Live", type: "hls", hlsUrl: "https://liveeu-gcp.alkassdigital.net/alkass1-p/main.m3u8" },
-  { id: 13, emoji: "⚽", sport: "Soccer",   title: "Alkass Two",                    meta: "Alkass · 24/7 Football Qatar",       badge: "live", viewers: "Live", type: "hls", hlsUrl: "https://liveeu-gcp.alkassdigital.net/alkass2-p/main.m3u8" },
-  { id: 14, emoji: "⚽", sport: "Soccer",   title: "Alkass Three",                  meta: "Alkass · 24/7 Football Qatar",       badge: "live", viewers: "Live", type: "hls", hlsUrl: "https://liveeu-gcp.alkassdigital.net/alkass3-p/main.m3u8" },
-  { id: 15, emoji: "⚽", sport: "Soccer",   title: "Alkass Four",                   meta: "Alkass · 24/7 Football Qatar",       badge: "live", viewers: "Live", type: "hls", hlsUrl: "https://liveeu-gcp.alkassdigital.net/alkass4-p/main.m3u8" },
-  { id: 16, emoji: "⚽", sport: "Soccer",   title: "Alkass Five",                   meta: "Alkass · 24/7 Football Qatar",       badge: "live", viewers: "Live", type: "hls", hlsUrl: "https://liveeu-gcp.alkassdigital.net/alkass5-p/main.m3u8" },
-  { id: 17, emoji: "⚽", sport: "Soccer",   title: "Alkass Six",                    meta: "Alkass · 24/7 Football Qatar",       badge: "live", viewers: "Live", type: "hls", hlsUrl: "https://liveeu-gcp.alkassdigital.net/alkass6-p/main.m3u8" },
-  { id: 18, emoji: "⚽", sport: "Soccer",   title: "Alkass Seven",                  meta: "Alkass · 24/7 Football Qatar",       badge: "live", viewers: "Live", type: "hls", hlsUrl: "https://liveeu-gcp.alkassdigital.net/alkass7-p/main.m3u8" },
-  { id: 19, emoji: "🔵", sport: "Soccer",   title: "Barca TV",                      meta: "FC Barcelona · 24/7 Official",       badge: "live", viewers: "Live", type: "hls", hlsUrl: "https://live20.bozztv.com/dvrfl06/astv/astv-barca/index.m3u8" },
-  { id: 20, emoji: "⚽", sport: "Soccer",   title: "TyC Sports",                    meta: "TyC · 24/7 Argentine Football",      badge: "live", viewers: "Live", type: "hls", hlsUrl: "https://amg26268-amg26268c14-freelivesports-emea-10267.playouts.now.amagi.tv/ts-us-e2-n2/playlist/amg26268-sportsstudio-tycsports-freelivesportsemea/playlist.m3u8" },
-  { id: 21, emoji: "⚽", sport: "Soccer",   title: "CazeTV",                        meta: "CazeTV · 24/7 Brazilian Football",   badge: "live", viewers: "Live", type: "hls", hlsUrl: "https://dfr80qz435crc.cloudfront.net/MNOP/Amagi/Caze/Caze_TV_BR/Caze_TV.m3u8" },
-  { id: 22, emoji: "⚽", sport: "Soccer",   title: "Gol Classics",                  meta: "Gol TV · 24/7 Soccer Classics",      badge: "live", viewers: "Live", type: "hls", hlsUrl: "https://d71gqtnep83vb.cloudfront.net/gol_classics/gol_classics.m3u8" },
-  { id: 23, emoji: "⚽", sport: "Soccer",   title: "L'Equipe",                      meta: "L'Equipe · 24/7 French Sports",      badge: "live", viewers: "Live", type: "hls", hlsUrl: "https://dshn8inoshngm.cloudfront.net/v1/master/3722c60a815c199d9c0ef36c5b73da68a62b09d1/cc-gac2i63dmu8b7/LEquipe_FR.m3u8" },
-  { id: 24, emoji: "🏆", sport: "Soccer",   title: "Premier Sports",                meta: "Premier Sports · 24/7 Football",     badge: "live", viewers: "Live", type: "hls", hlsUrl: "https://amg19223-amg19223c3-amgplt0351.playout.now3.amagi.tv/playlist/amg19223-amg19223c3-amgplt0351/playlist.m3u8" },
-  { id: 25, emoji: "🏆", sport: "Soccer",   title: "Premier Sports 2",              meta: "Premier Sports · 24/7 Football",     badge: "live", viewers: "Live", type: "hls", hlsUrl: "https://amg19223-amg19223c4-amgplt0351.playout.now3.amagi.tv/playlist/amg19223-amg19223c4-amgplt0351/playlist.m3u8" },
-  { id: 26, emoji: "🌍", sport: "Sports",   title: "fubo Sports Network",           meta: "fubo · 24/7 Multi-Sport",            badge: "live", viewers: "Live", type: "hls", hlsUrl: "https://dnf08l6u6uxnz.cloudfront.net/master.m3u8" },
-  { id: 27, emoji: "🌍", sport: "Sports",   title: "Africa 24 Sport",               meta: "Africa 24 · 24/7 African Sports",    badge: "live", viewers: "Live", type: "hls", hlsUrl: "https://africa24.vedge.infomaniak.com/livecast/ik:africa24sport/manifest.m3u8" },
-];
-  { id: 8,  emoji: "⚽", sport: "Soccer",   title: "beIN Sports XTRA",             meta: "beIN Sports · 24/7 Soccer",          badge: "live", viewers: "Live", type: "hls", hlsUrl: "https://bein-xtra-bein.amagi.tv/playlist.m3u8" },
-  { id: 9,  emoji: "⚽", sport: "Soccer",   title: "beIN Sports en Español",        meta: "beIN Sports · 24/7 Soccer Spanish",  badge: "live", viewers: "Live", type: "hls", hlsUrl: "https://dc1644a9jazgj.cloudfront.net/beIN_Sports_Xtra_Espanol.m3u8" },
-  { id: 10, emoji: "🏆", sport: "Soccer",   title: "CBS Sports Golazo",             meta: "CBS Sports · 24/7 Soccer",           badge: "live", viewers: "Live", type: "hls", hlsUrl: "https://proped3fhg87.airspace-cdn.cbsivideo.com/golazo-live-dai/master/golazo-live-dai.m3u8" },
-  { id: 11, emoji: "⚽", sport: "Soccer",   title: "FIFA+ US",                      meta: "FIFA · 24/7 Official Channel",       badge: "live", viewers: "Live", type: "hls", hlsUrl: "https://d2w9q46ikgrcwx.cloudfront.net/v1/master/3722c60a815c199d9c0ef36c5b73da68a62b09d1/cc-of5cbk3sav3w5/v1/sysdata_s_p_a_fifa_7/samsungheadend_us/latest/main/hls/playlist.m3u8" },
-  { id: 12, emoji: "⚽", sport: "Soccer",   title: "Alkass One",                    meta: "Alkass · 24/7 Football Qatar",       badge: "live", viewers: "Live", type: "hls", hlsUrl: "https://liveeu-gcp.alkassdigital.net/alkass1-p/main.m3u8" },
-  { id: 13, emoji: "⚽", sport: "Soccer",   title: "Alkass Two",                    meta: "Alkass · 24/7 Football Qatar",       badge: "live", viewers: "Live", type: "hls", hlsUrl: "https://liveeu-gcp.alkassdigital.net/alkass2-p/main.m3u8" },
-  { id: 14, emoji: "⚽", sport: "Soccer",   title: "Alkass Three",                  meta: "Alkass · 24/7 Football Qatar",       badge: "live", viewers: "Live", type: "hls", hlsUrl: "https://liveeu-gcp.alkassdigital.net/alkass3-p/main.m3u8" },
-  { id: 15, emoji: "⚽", sport: "Soccer",   title: "Alkass Four",                   meta: "Alkass · 24/7 Football Qatar",       badge: "live", viewers: "Live", type: "hls", hlsUrl: "https://liveeu-gcp.alkassdigital.net/alkass4-p/main.m3u8" },
-  { id: 16, emoji: "⚽", sport: "Soccer",   title: "Alkass Five",                   meta: "Alkass · 24/7 Football Qatar",       badge: "live", viewers: "Live", type: "hls", hlsUrl: "https://liveeu-gcp.alkassdigital.net/alkass5-p/main.m3u8" },
-  { id: 17, emoji: "⚽", sport: "Soccer",   title: "Alkass Six",                    meta: "Alkass · 24/7 Football Qatar",       badge: "live", viewers: "Live", type: "hls", hlsUrl: "https://liveeu-gcp.alkassdigital.net/alkass6-p/main.m3u8" },
-  { id: 18, emoji: "⚽", sport: "Soccer",   title: "Alkass Seven",                  meta: "Alkass · 24/7 Football Qatar",       badge: "live", viewers: "Live", type: "hls", hlsUrl: "https://liveeu-gcp.alkassdigital.net/alkass7-p/main.m3u8" },
-  { id: 19, emoji: "🔵", sport: "Soccer",   title: "Barca TV",                      meta: "FC Barcelona · 24/7 Official",       badge: "live", viewers: "Live", type: "hls", hlsUrl: "https://live20.bozztv.com/dvrfl06/astv/astv-barca/index.m3u8" },
-  { id: 20, emoji: "⚽", sport: "Soccer",   title: "TyC Sports",                    meta: "TyC · 24/7 Argentine Football",      badge: "live", viewers: "Live", type: "hls", hlsUrl: "https://amg26268-amg26268c14-freelivesports-emea-10267.playouts.now.amagi.tv/ts-us-e2-n2/playlist/amg26268-sportsstudio-tycsports-freelivesportsemea/playlist.m3u8" },
-  { id: 21, emoji: "⚽", sport: "Soccer",   title: "CazeTV",                        meta: "CazeTV · 24/7 Brazilian Football",   badge: "live", viewers: "Live", type: "hls", hlsUrl: "https://dfr80qz435crc.cloudfront.net/MNOP/Amagi/Caze/Caze_TV_BR/Caze_TV.m3u8" },
-  { id: 22, emoji: "⚽", sport: "Soccer",   title: "Gol Classics",                  meta: "Gol TV · 24/7 Soccer Classics",      badge: "live", viewers: "Live", type: "hls", hlsUrl: "https://d71gqtnep83vb.cloudfront.net/gol_classics/gol_classics.m3u8" },
-  { id: 23, emoji: "⚽", sport: "Soccer",   title: "L'Equipe",                      meta: "L'Equipe · 24/7 French Sports",      badge: "live", viewers: "Live", type: "hls", hlsUrl: "https://dshn8inoshngm.cloudfront.net/v1/master/3722c60a815c199d9c0ef36c5b73da68a62b09d1/cc-gac2i63dmu8b7/LEquipe_FR.m3u8" },
-  { id: 24, emoji: "🏆", sport: "Soccer",   title: "Premier Sports",                meta: "Premier Sports · 24/7 Football",     badge: "live", viewers: "Live", type: "hls", hlsUrl: "https://amg19223-amg19223c3-amgplt0351.playout.now3.amagi.tv/playlist/amg19223-amg19223c3-amgplt0351/playlist.m3u8" },
-  { id: 25, emoji: "🏆", sport: "Soccer",   title: "Premier Sports 2",              meta: "Premier Sports · 24/7 Football",     badge: "live", viewers: "Live", type: "hls", hlsUrl: "https://amg19223-amg19223c4-amgplt0351.playout.now3.amagi.tv/playlist/amg19223-amg19223c4-amgplt0351/playlist.m3u8" },
-  { id: 26, emoji: "🌍", sport: "Sports",   title: "fubo Sports Network",           meta: "fubo · 24/7 Multi-Sport",            badge: "live", viewers: "Live", type: "hls", hlsUrl: "https://dnf08l6u6uxnz.cloudfront.net/master.m3u8" },
-  { id: 27, emoji: "🌍", sport: "Sports",   title: "Africa 24 Sport",               meta: "Africa 24 · 24/7 African Sports",    badge: "live", viewers: "Live", type: "hls", hlsUrl: "https://africa24.vedge.infomaniak.com/livecast/ik:africa24sport/manifest.m3u8" },
+  { id:1,  emoji:"🚀", sport:"Space",   title:"NASA — Earth from the ISS",    meta:"NASA YouTube · 24/7 Live",        badge:"live",     viewers:"Live", type:"youtube", youtubeId:"P9C25Un7xaM" },
+  { id:2,  emoji:"📈", sport:"News",    title:"Bloomberg Markets — Live",      meta:"Bloomberg TV · 24/7",             badge:"live",     viewers:"Live", type:"youtube", youtubeId:"dp8PhLsUcFE" },
+  { id:3,  emoji:"📰", sport:"News",    title:"DW News — Live",                meta:"Deutsche Welle · 24/7 English",   badge:"live",     viewers:"Live", type:"youtube", youtubeId:"mGnFOVMX2xQ" },
+  { id:4,  emoji:"🌍", sport:"News",    title:"Al Jazeera English — Live",     meta:"Al Jazeera · 24/7 World News",    badge:"live",     viewers:"Live", type:"youtube", youtubeId:"h3MuIUNCCLI" },
+  { id:5,  emoji:"🗼", sport:"News",    title:"France 24 — Live English",      meta:"France 24 · 24/7 International",  badge:"live",     viewers:"Live", type:"youtube", youtubeId:"nGCXc8XOQWI" },
+  { id:6,  emoji:"📡", sport:"News",    title:"Sky News — Live",               meta:"Sky News · 24/7 UK & World",      badge:"live",     viewers:"Live", type:"youtube", youtubeId:"9Auq9mYxFEE" },
+  { id:7,  emoji:"🇪🇺", sport:"News",  title:"Euronews — Live English",       meta:"Euronews · 24/7 European News",   badge:"live",     viewers:"Live", type:"youtube", youtubeId:"zC0s4EBkrRQ" },
+  { id:8,  emoji:"⚽", sport:"Soccer",  title:"FIFA World Cup 2026",           meta:"Goes live on match days",         badge:"upcoming", viewers:null,   time:"See Schedule", type:"youtube", youtubeId:"jfKfPfyJRdk" },
+  { id:9,  emoji:"🎾", sport:"Tennis",  title:"Wimbledon 2026",               meta:"Wimbledon YouTube · Goes live",   badge:"upcoming", viewers:null,   time:"See Schedule", type:"youtube", youtubeId:"jfKfPfyJRdk" },
+  { id:10, emoji:"🏏", sport:"Cricket", title:"ICC Cricket — Live Match",      meta:"ICC YouTube · Check for live ID", badge:"upcoming", viewers:null,   time:"See Schedule", type:"youtube", youtubeId:"jfKfPfyJRdk" },
 ];
 
-const replays = [];
+const replays = [
+  { id:11, emoji:"⚽", sport:"Soccer",     title:"Man City vs. Arsenal Replay",  meta:"Premier League · Replay",   badge:"replay", type:"youtube", youtubeId:"jfKfPfyJRdk" },
+  { id:12, emoji:"🏀", sport:"Basketball", title:"NBA Playoffs Highlights",      meta:"NBA YouTube · Replay",      badge:"replay", type:"youtube", youtubeId:"jfKfPfyJRdk" },
+  { id:13, emoji:"🏈", sport:"Football",   title:"Super Bowl LVIX Full Match",   meta:"NFL · Feb 2026 · Replay",   badge:"replay", type:"youtube", youtubeId:"jfKfPfyJRdk" },
+  { id:14, emoji:"🎾", sport:"Tennis",     title:"French Open Men's Final",      meta:"Grand Slam · Replay",       badge:"replay", type:"youtube", youtubeId:"jfKfPfyJRdk" },
+];
 
 const channels = [
-  { emoji: "🏟️", name: "Stadium",              genre: "Sports",       hlsUrl: "https://bcovlive-a.akamaihd.net/e64d564b9275484f85981d8c146fb915/us-east-1/5994000126001/profile_1/976f34cf5a614518b7b539cbf9812080/chunklist_ssaiV.m3u8" },
-  { emoji: "⚽", name: "beIN Sports XTRA",      genre: "Soccer",       hlsUrl: "https://bein-xtra-bein.amagi.tv/playlist.m3u8" },
-  { emoji: "⚽", name: "beIN en Español",        genre: "Soccer",       hlsUrl: "https://dc1644a9jazgj.cloudfront.net/beIN_Sports_Xtra_Espanol.m3u8" },
-  { emoji: "🏆", name: "CBS Sports Golazo",      genre: "Soccer",       hlsUrl: "https://proped3fhg87.airspace-cdn.cbsivideo.com/golazo-live-dai/master/golazo-live-dai.m3u8" },
-  { emoji: "⚽", name: "FIFA+ US",               genre: "Soccer",       hlsUrl: "https://d2w9q46ikgrcwx.cloudfront.net/v1/master/3722c60a815c199d9c0ef36c5b73da68a62b09d1/cc-of5cbk3sav3w5/v1/sysdata_s_p_a_fifa_7/samsungheadend_us/latest/main/hls/playlist.m3u8" },
-  { emoji: "⚽", name: "Alkass One",             genre: "Soccer",       hlsUrl: "https://liveeu-gcp.alkassdigital.net/alkass1-p/main.m3u8" },
-  { emoji: "⚽", name: "Alkass Two",             genre: "Soccer",       hlsUrl: "https://liveeu-gcp.alkassdigital.net/alkass2-p/main.m3u8" },
-  { emoji: "⚽", name: "Alkass Three",           genre: "Soccer",       hlsUrl: "https://liveeu-gcp.alkassdigital.net/alkass3-p/main.m3u8" },
-  { emoji: "⚽", name: "Alkass Four",            genre: "Soccer",       hlsUrl: "https://liveeu-gcp.alkassdigital.net/alkass4-p/main.m3u8" },
-  { emoji: "⚽", name: "Alkass Five",            genre: "Soccer",       hlsUrl: "https://liveeu-gcp.alkassdigital.net/alkass5-p/main.m3u8" },
-  { emoji: "⚽", name: "Alkass Six",             genre: "Soccer",       hlsUrl: "https://liveeu-gcp.alkassdigital.net/alkass6-p/main.m3u8" },
-  { emoji: "⚽", name: "Alkass Seven",           genre: "Soccer",       hlsUrl: "https://liveeu-gcp.alkassdigital.net/alkass7-p/main.m3u8" },
-  { emoji: "🔵", name: "Barca TV",               genre: "Soccer",       hlsUrl: "https://live20.bozztv.com/dvrfl06/astv/astv-barca/index.m3u8" },
-  { emoji: "⚽", name: "TyC Sports",             genre: "Soccer",       hlsUrl: "https://amg26268-amg26268c14-freelivesports-emea-10267.playouts.now.amagi.tv/ts-us-e2-n2/playlist/amg26268-sportsstudio-tycsports-freelivesportsemea/playlist.m3u8" },
-  { emoji: "⚽", name: "Gol Classics",           genre: "Soccer",       hlsUrl: "https://d71gqtnep83vb.cloudfront.net/gol_classics/gol_classics.m3u8" },
-  { emoji: "🏆", name: "Premier Sports",         genre: "Soccer",       hlsUrl: "https://amg19223-amg19223c3-amgplt0351.playout.now3.amagi.tv/playlist/amg19223-amg19223c3-amgplt0351/playlist.m3u8" },
-  { emoji: "🏆", name: "Premier Sports 2",       genre: "Soccer",       hlsUrl: "https://amg19223-amg19223c4-amgplt0351.playout.now3.amagi.tv/playlist/amg19223-amg19223c4-amgplt0351/playlist.m3u8" },
-  { emoji: "🔴", name: "CNN",                    genre: "News",         hlsUrl: "https://tve-live-lln.warnermediacdn.com/hls/live/586495/cnngo/cnn_slate/VIDEO_0_3564000.m3u8" },
-  { emoji: "📰", name: "CBS News",               genre: "News",         hlsUrl: "https://cbsnews.akamaized.net/hls/live/2020607/cbsnlineup_8/master.m3u8" },
-  { emoji: "📺", name: "NBC News Now",           genre: "News",         hlsUrl: "http://dai2.xumo.com/xumocdn/p=roku/amagi_hls_data_xumo1212A-xumo-nbcnewsnow/CDN/playlist.m3u8" },
-  { emoji: "🌍", name: "Reuters TV",             genre: "News",         hlsUrl: "https://reuters-reutersnow-1-eu.rakuten.wurl.tv/playlist.m3u8" },
-  { emoji: "📈", name: "Bloomberg TV",           genre: "News",         hlsUrl: "https://bloomberg.com/media-manifest/streams/us.m3u8" },
-  { emoji: "📡", name: "NASA TV",               genre: "News",         hlsUrl: "https://ntv1.akamaized.net/hls/live/2014075/NASA-NTV1-HLS/master_2000.m3u8" },
-  { emoji: "🌍", name: "fubo Sports",            genre: "Sports",       hlsUrl: "https://dnf08l6u6uxnz.cloudfront.net/master.m3u8" },
-  { emoji: "🌍", name: "Africa 24 Sport",        genre: "Sports",       hlsUrl: "https://africa24.vedge.infomaniak.com/livecast/ik:africa24sport/manifest.m3u8" },
+  { emoji:"🏟️", name:"ESPN 24/7",         genre:"Sports",        youtubeId:"dp8PhLsUcFE" },
+  { emoji:"⚽",  name:"Sky Sports",         genre:"Sports",        youtubeId:"dp8PhLsUcFE" },
+  { emoji:"📰",  name:"CNN International",  genre:"News",          youtubeId:"h3MuIUNCCLI" },
+  { emoji:"🌍",  name:"DW News",            genre:"News",          youtubeId:"mGnFOVMX2xQ" },
+  { emoji:"🗼",  name:"France 24",          genre:"News",          youtubeId:"nGCXc8XOQWI" },
+  { emoji:"📡",  name:"Sky News",           genre:"News",          youtubeId:"9Auq9mYxFEE" },
+  { emoji:"🎵",  name:"MTV Live",           genre:"Entertainment", youtubeId:"dp8PhLsUcFE" },
+  { emoji:"🧒",  name:"Cartoon Network",    genre:"Kids",          youtubeId:"P9C25Un7xaM" },
 ];
 
+// ── PLAYER URL ───────────────────────────────────────────
 function playerUrl(item) {
-  const base = 'player.html';
-  const params = new URLSearchParams();
-  if (item.title) params.set('title', item.title);
-  if (item.sport) params.set('sport', item.sport);
-  if (item.meta) params.set('meta', item.meta);
-  if (item.type === 'hls' && item.hlsUrl) {
-    params.set('hls', item.hlsUrl);
-  } else if (item.youtubeId) {
-    params.set('yt', item.youtubeId);
-  }
-  return base + '?' + params.toString();
+  const p = new URLSearchParams();
+  if (item.title)     p.set('title', item.title);
+  if (item.sport)     p.set('sport', item.sport);
+  if (item.meta)      p.set('meta',  item.meta);
+  if (item.youtubeId) p.set('yt',   item.youtubeId);
+  return 'player.html?' + p.toString();
 }
 
+// ── CARDS ────────────────────────────────────────────────
 function createCard(item) {
   const card = document.createElement('a');
   card.className = 'stream-card';
@@ -793,134 +258,82 @@ function createCard(item) {
     badgeHTML = `<span class="badge badge-replay">REPLAY</span>`;
   }
 
-  const viewerHTML = item.viewers
-    ? `<span class="viewer-count">&#128065; ${item.viewers}</span>`
-    : '';
+  const viewerHTML = item.viewers ? `<span class="viewer-count">👁 ${item.viewers}</span>` : '';
 
   card.innerHTML = `
     <div class="card-thumb">
       <div class="thumb-fallback">${item.emoji}</div>
-      ${badgeHTML}
-      ${viewerHTML}
+      ${badgeHTML}${viewerHTML}
     </div>
     <div class="card-body">
       <div class="card-sport">${item.sport}</div>
       <div class="card-title">${item.title}</div>
-      <div class="card-meta">
-        <span>${item.meta}</span>
-      </div>
-    </div>
-  `;
-
+      <div class="card-meta">${item.meta}</div>
+    </div>`;
   return card;
 }
 
 function createChannel(ch) {
   const card = document.createElement('a');
   card.className = 'channel-card';
-  const params = new URLSearchParams();
-  params.set('title', ch.name);
-  params.set('sport', ch.genre);
-  params.set('meta', ch.name + ' · 24/7 Live');
-  if (ch.hlsUrl) params.set('hls', ch.hlsUrl);
-  card.href = 'player.html?' + params.toString();
+  card.href = `player.html?yt=${ch.youtubeId}&title=${encodeURIComponent(ch.name)}&sport=${encodeURIComponent(ch.genre)}`;
   card.innerHTML = `
     <div class="channel-icon">${ch.emoji}</div>
     <div class="channel-name">${ch.name}</div>
     <div class="channel-genre">${ch.genre}</div>
-    <div class="channel-status"><span class="online-dot"></span>On Air</div>
-  `;
+    <div class="channel-status"><span class="online-dot"></span>On Air</div>`;
   return card;
 }
 
-
-
-// --- STATE ---
+// ── STATE ─────────────────────────────────────────────────
 let activeSport = 'all';
 let activeGenre = 'all';
 let searchQuery = '';
 
-// --- FILTER + SEARCH ENGINE ---
+// ── FILTERS ──────────────────────────────────────────────
 function applyFilters() {
   const q = searchQuery.toLowerCase();
 
-  // Live grid
   const filteredLive = liveEvents.filter(item => {
-    const sportMatch = activeSport === 'all' || item.sport.toLowerCase().includes(activeSport);
-    const searchMatch = !q ||
-      item.title.toLowerCase().includes(q) ||
-      item.sport.toLowerCase().includes(q) ||
-      item.meta.toLowerCase().includes(q);
-    return sportMatch && searchMatch;
+    const sm = activeSport === 'all' || item.sport.toLowerCase().includes(activeSport);
+    const qm = !q || item.title.toLowerCase().includes(q) || item.sport.toLowerCase().includes(q) || item.meta.toLowerCase().includes(q);
+    return sm && qm;
   });
 
-  // Replay grid
   const filteredReplays = replays.filter(item => {
-    const sportMatch = activeSport === 'all' || item.sport.toLowerCase().includes(activeSport);
-    const searchMatch = !q ||
-      item.title.toLowerCase().includes(q) ||
-      item.sport.toLowerCase().includes(q) ||
-      item.meta.toLowerCase().includes(q);
-    return sportMatch && searchMatch;
+    const sm = activeSport === 'all' || item.sport.toLowerCase().includes(activeSport);
+    const qm = !q || item.title.toLowerCase().includes(q) || item.sport.toLowerCase().includes(q) || item.meta.toLowerCase().includes(q);
+    return sm && qm;
   });
 
-  // Channel grid
   const filteredChannels = channels.filter(ch => {
-    const genreMatch = activeGenre === 'all' || ch.genre.toLowerCase().includes(activeGenre);
-    const searchMatch = !q ||
-      ch.name.toLowerCase().includes(q) ||
-      ch.genre.toLowerCase().includes(q);
-    return genreMatch && searchMatch;
+    const gm = activeGenre === 'all' || ch.genre.toLowerCase().includes(activeGenre);
+    const qm = !q || ch.name.toLowerCase().includes(q) || ch.genre.toLowerCase().includes(q);
+    return gm && qm;
   });
 
-  // Render
   const lg = document.getElementById('liveGrid');
   const rg = document.getElementById('replayGrid');
   const cg = document.getElementById('channelGrid');
-  lg.innerHTML = '';
-  rg.innerHTML = '';
-  cg.innerHTML = '';
+  lg.innerHTML = ''; rg.innerHTML = ''; cg.innerHTML = '';
 
-  if (filteredLive.length) {
-    filteredLive.forEach(e => lg.appendChild(createCard(e)));
-  } else {
-    lg.innerHTML = '<p class="empty-state">No live events match your search.</p>';
-  }
+  filteredLive.length   ? filteredLive.forEach(e => lg.appendChild(createCard(e)))      : (lg.innerHTML = '<p class="empty-state">No live events match.</p>');
+  filteredReplays.length ? filteredReplays.forEach(e => rg.appendChild(createCard(e)))  : (rg.innerHTML = '<p class="empty-state">No replays match.</p>');
+  filteredChannels.length ? filteredChannels.forEach(c => cg.appendChild(createChannel(c))) : (cg.innerHTML = '<p class="empty-state">No channels match.</p>');
 
-  if (filteredReplays.length) {
-    filteredReplays.forEach(e => rg.appendChild(createCard(e)));
-  } else {
-    rg.innerHTML = '<p class="empty-state">No replays match your search.</p>';
-  }
-
-  if (filteredChannels.length) {
-    filteredChannels.forEach(c => cg.appendChild(createChannel(c)));
-  } else {
-    cg.innerHTML = '<p class="empty-state">No channels match your search.</p>';
-  }
-
-  // Update section counts
   document.getElementById('liveCountBadge').textContent = filteredLive.length;
 }
 
-// --- PILL FILTERS ---
 function filterPills(el) {
   const parent = el.parentElement;
   parent.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
   el.classList.add('active');
-
   const label = el.textContent.replace(/[^a-zA-Z]/g, '').toLowerCase();
-
-  if (parent.id === 'sportsFilter') {
-    activeSport = label === 'allsports' ? 'all' : label;
-  } else if (parent.id === 'genreFilter') {
-    activeGenre = label === 'allgenres' ? 'all' : label;
-  }
-
+  if (parent.id === 'sportsFilter') activeSport = label === 'allsports' ? 'all' : label;
+  else if (parent.id === 'genreFilter') activeGenre = label === 'allgenres' ? 'all' : label;
   applyFilters();
 }
 
-// --- SEARCH ---
 function handleSearch() {
   searchQuery = document.getElementById('searchInput').value.trim();
   applyFilters();
@@ -932,29 +345,11 @@ document.getElementById('searchInput').addEventListener('input', () => {
 });
 
 document.getElementById('searchInput').addEventListener('keydown', e => {
-  if (e.key === 'Escape') {
-    document.getElementById('searchInput').value = '';
-    searchQuery = '';
-    applyFilters();
-  }
+  if (e.key === 'Escape') { document.getElementById('searchInput').value = ''; searchQuery = ''; applyFilters(); }
 });
 
-// Animate live viewer count
-function jitterViewers() {
-  document.querySelectorAll('.viewer-count').forEach(el => {
-    const text = el.textContent;
-    const match = text.match(/([\d.]+)([km]?)/i);
-    if (match) {
-      let val = parseFloat(match[1]);
-      val += (Math.random() - 0.5) * 0.3;
-      val = Math.max(0.1, val);
-      el.textContent = `👁 ${val.toFixed(1)}${match[2]}`;
-    }
-  });
-}
-
+// ── INIT ──────────────────────────────────────────────────
 applyFilters();
-setInterval(jitterViewers, 3000);
 </script>
 </body>
 </html>

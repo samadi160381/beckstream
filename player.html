@@ -706,9 +706,11 @@ function loadYouTube(id) {
   frame.src = `https://www.youtube.com/embed/${ytId}?autoplay=1&rel=0&modestbranding=1`;
   frame.style.display = 'block';
 
-  frame.onload = () => showLoading(false);
-  // Fallback: hide loader after 3s
-  setTimeout(() => showLoading(false), 3000);
+  // Check if stream loaded or is unavailable after 6s
+  let loaded = false;
+  frame.onload = () => { loaded = true; showLoading(false); };
+  setTimeout(() => { if (!loaded) showLoading(false); }, 3000);
+  setTimeout(() => showLoading(false), 6000);
 
   document.getElementById('qualityBtn').style.display = 'none';
   lastUrl = `https://youtube.com/watch?v=${ytId}`;

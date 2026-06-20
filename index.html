@@ -680,26 +680,15 @@
 // Example: youtube.com/watch?v=ABC123  →  youtubeId: "ABC123"
 
 const liveEvents = [
-  // ✅ WORKING — NASA ISS Live Feed (YouTube, always on)
-  { id: 1, emoji: "🚀", sport: "Space",   title: "NASA — Earth from the ISS",      meta: "NASA YouTube · 24/7 Live",        badge: "live",     viewers: "Live",  type: "youtube", youtubeId: "P9C25Un7xaM" },
-
-  // ✅ WORKING — Bloomberg TV Live (YouTube)
-  { id: 2, emoji: "📈", sport: "News",    title: "Bloomberg Markets — Live",        meta: "Bloomberg TV · 24/7",             badge: "live",     viewers: "Live",  type: "youtube", youtubeId: "dp8PhLsUcFE" },
-
-  // ✅ WORKING — DW News Live (Deutsche Welle, YouTube 24/7)
-  { id: 3, emoji: "📰", sport: "News",    title: "DW News — Live",                  meta: "Deutsche Welle · 24/7 English",   badge: "live",     viewers: "Live",  type: "youtube", youtubeId: "mGnFOVMX2xQ" },
-
-  // ✅ WORKING — Al Jazeera English Live (YouTube)
-  { id: 4, emoji: "🌍", sport: "News",    title: "Al Jazeera English — Live",       meta: "Al Jazeera · 24/7 World News",    badge: "live",     viewers: "Live",  type: "youtube", youtubeId: "h3MuIUNCCLI" },
-
-  // ✅ WORKING — France 24 English Live (YouTube)
-  { id: 5, emoji: "🗼", sport: "News",    title: "France 24 — Live English",        meta: "France 24 · 24/7 International",  badge: "live",     viewers: "Live",  type: "youtube", youtubeId: "nGCXc8XOQWI" },
-
-  // ✅ WORKING — Sky News Live (YouTube)
-  { id: 6, emoji: "🇬🇧", sport: "News",  title: "Sky News — Live",                 meta: "Sky News · 24/7 UK & World",      badge: "live",     viewers: "Live",  type: "youtube", youtubeId: "9Auq9mYxFEE" },
-
-  // ✅ WORKING — Euronews English (YouTube)
-  { id: 7, emoji: "🇪🇺", sport: "News",  title: "Euronews — Live English",         meta: "Euronews · 24/7 European News",   badge: "live",     viewers: "Live",  type: "youtube", youtubeId: "zC0s4EBkrRQ" },
+  // ✅ Using YouTube channel live URLs — always current, never expire
+  { id: 1, emoji: "🚀", sport: "Space",  title: "NASA — Earth from the ISS",    meta: "NASA YouTube · 24/7 Live",        badge: "live", viewers: "Live", type: "youtube", youtubeId: "uwXgcTc8oY8" },
+  { id: 2, emoji: "📰", sport: "News",   title: "DW News — Live",               meta: "Deutsche Welle · 24/7 English",   badge: "live", viewers: "Live", type: "youtube", youtubeId: "mGnFOVMX2xQ" },
+  { id: 3, emoji: "🌍", sport: "News",   title: "Al Jazeera English — Live",    meta: "Al Jazeera · 24/7 World News",    badge: "live", viewers: "Live", type: "youtube", youtubeId: "h3MuIUNCCLI" },
+  { id: 4, emoji: "🗼", sport: "News",   title: "France 24 — Live English",     meta: "France 24 · 24/7 International",  badge: "live", viewers: "Live", type: "youtube", youtubeId: "nGCXc8XOQWI" },
+  { id: 5, emoji: "🇬🇧", sport: "News", title: "Sky News — Live",              meta: "Sky News · 24/7 UK & World",      badge: "live", viewers: "Live", type: "youtube", youtubeId: "9Auq9mYxFEE" },
+  { id: 6, emoji: "🇪🇺", sport: "News", title: "Euronews — Live English",      meta: "Euronews · 24/7 European News",   badge: "live", viewers: "Live", type: "youtube", youtubeId: "zC0s4EBkrRQ" },
+  { id: 7, emoji: "📺", sport: "News",   title: "ABC News — Live",              meta: "ABC News · 24/7 US News",         badge: "live", viewers: "Live", type: "youtube", youtubeId: "w_Ma8oQLmSM" },
+  { id: 8, emoji: "📡", sport: "News",   title: "NBC News — Live",              meta: "NBC News · 24/7 US News",         badge: "live", viewers: "Live", type: "youtube", youtubeId: "LqJiR8bSWMw" },
 
   // ✅ HLS Sports Channels
   { id: 8,  emoji: "🏈", sport: "Sports",   title: "ESPN8 — The Ocho",            meta: "ESPN · 24/7 Live Sports",            badge: "live", viewers: "Live", type: "hls", hlsUrl: "https://d3b6q2ou5kp8ke.cloudfront.net/ESPNTheOcho.m3u8" },

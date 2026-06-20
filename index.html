@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>StreamVault — Free Live Streams</title>
+<title>BeckStream — Free Live Streams</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
 <style>
@@ -556,6 +556,12 @@
     <li><a href="#">Channels</a></li>
   </ul>
   <div class="nav-right">
+    <ul class="nav-links" style="display:flex;gap:28px;list-style:none;margin-right:16px;">
+      <li><a href="index.html" style="color:var(--cyan);text-decoration:none;font-size:14px;font-weight:500;">Streams</a></li>
+      <li><a href="multiview.html" style="color:var(--muted);text-decoration:none;font-size:14px;font-weight:500;">MultiView</a></li>
+      <li><a href="schedule.html" style="color:var(--muted);text-decoration:none;font-size:14px;font-weight:500;">Schedule</a></li>
+      <li><a href="#" style="color:var(--muted);text-decoration:none;font-size:14px;font-weight:500;">Channels</a></li>
+    </ul>
     <button class="btn-ghost">Discord</button>
   </div>
 </nav>
@@ -662,16 +668,10 @@
     <a href="#">Discord</a>
     <a href="#">Mirrors</a>
   </p>
-  <p>© 2026 StreamVault. Free · No Login · No BS</p>
+  <p>© 2026 BeckStream. Free · No Login · No BS</p>
 </footer>
 
-    <div class="modal-info">
-      <h2 id="modalTitle">Stream Title</h2>
-      <p id="modalMeta">Loading stream…</p>
-      <button class="modal-close" onclick="closeModal()">✕ Close</button>
-    </div>
-  </div>
-</div>
+
 
 <script>
 // ─── STREAM CATALOGUE ──────────────────────────────────
@@ -893,8 +893,6 @@ document.getElementById('searchInput').addEventListener('keydown', e => {
     applyFilters();
   }
 });
-
-}
 
 // Animate live viewer count
 function jitterViewers() {

@@ -1,0 +1,1114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Watch — BeckStream</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<!-- HLS.js for custom stream URLs -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hls.js/1.4.12/hls.min.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0a0e1a;
+    --surface: #111827;
+    --surface2: #1a2236;
+    --border: #1f2d45;
+    --cyan: #00d4ff;
+    --cyan-dim: rgba(0,212,255,0.12);
+    --coral: #ff4757;
+    --green: #2ed573;
+    --yellow: #ffa502;
+    --text: #e8edf5;
+    --muted: #8892a4;
+    --label: #4a5568;
+  }
+
+  html, body { height: 100%; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* NAV */
+  nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 24px;
+    height: 56px;
+    background: rgba(10,14,26,0.97);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+
+  .nav-logo {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 20px;
+    color: var(--cyan);
+    text-decoration: none;
+    letter-spacing: -0.5px;
+  }
+  .nav-logo span { color: var(--text); }
+
+  .nav-links { display: flex; gap: 24px; list-style: none; }
+  .nav-links a {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--text); }
+  .nav-links .active { color: var(--cyan); }
+
+  .btn-ghost {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    padding: 5px 14px;
+    border-radius: 6px;
+    font-size: 13px;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    transition: all 0.2s;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .btn-ghost:hover { border-color: var(--cyan); color: var(--cyan); }
+
+  /* LAYOUT */
+  .watch-layout {
+    display: flex;
+    flex: 1;
+    min-height: 0;
+    gap: 0;
+  }
+
+  /* PLAYER COLUMN */
+  .player-column {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  /* PLAYER STAGE */
+  .player-stage {
+    position: relative;
+    background: #000;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    max-height: calc(100vh - 56px - 200px);
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+
+  /* YouTube iframe */
+  #youtubeFrame {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+    display: none;
+  }
+
+  /* HLS / native video */
+  #hlsVideo {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    background: #000;
+    display: none;
+  }
+
+  /* Placeholder when nothing loaded */
+  .player-placeholder {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    color: var(--muted);
+    background: #050810;
+  }
+
+  .placeholder-icon { font-size: 56px; }
+
+  .placeholder-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--text);
+    text-align: center;
+    letter-spacing: -0.5px;
+  }
+
+  .placeholder-sub { font-size: 14px; color: var(--muted); text-align: center; max-width: 380px; }
+
+  /* LIVE badge overlay */
+  .live-badge-overlay {
+    position: absolute;
+    top: 14px;
+    left: 14px;
+    display: none;
+    align-items: center;
+    gap: 6px;
+    background: var(--coral);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    padding: 4px 10px;
+    border-radius: 5px;
+    z-index: 10;
+    text-transform: uppercase;
+  }
+
+  .live-badge-overlay.show { display: flex; }
+
+  .live-dot {
+    width: 6px; height: 6px;
+    background: #fff;
+    border-radius: 50%;
+    position: relative;
+  }
+  .live-dot::after {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: 50%;
+    border: 1.5px solid #fff;
+    animation: radar 1.4s ease-out infinite;
+  }
+
+  @keyframes radar {
+    0% { opacity: 0.8; transform: scale(1); }
+    100% { opacity: 0; transform: scale(2.5); }
+  }
+
+  /* PLAYER INFO BAR */
+  .player-info {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 14px 20px;
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .player-info-main { flex: 1; min-width: 0; }
+
+  .player-sport {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--cyan);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 3px;
+  }
+
+  .player-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    margin-bottom: 4px;
+  }
+
+  .player-meta { font-size: 13px; color: var(--muted); }
+
+  .player-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+
+  .btn-primary {
+    background: var(--cyan);
+    color: #0a0e1a;
+    border: none;
+    padding: 8px 18px;
+    border-radius: 7px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    transition: opacity 0.2s;
+  }
+  .btn-primary:hover { opacity: 0.85; }
+
+  /* CUSTOM URL PANEL */
+  .url-panel {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px 20px;
+    margin: 16px 20px;
+  }
+
+  .url-panel h3 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .url-panel h3 span {
+    font-size: 11px;
+    background: var(--cyan-dim);
+    color: var(--cyan);
+    border: 1px solid rgba(0,212,255,0.3);
+    padding: 2px 8px;
+    border-radius: 100px;
+    font-weight: 600;
+  }
+
+  .url-input-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+
+  .url-input-row input {
+    flex: 1;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 9px 14px;
+    border-radius: 7px;
+    font-size: 13px;
+    font-family: 'Inter', sans-serif;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .url-input-row input::placeholder { color: var(--label); }
+  .url-input-row input:focus { border-color: var(--cyan); }
+
+  .url-type-tabs {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 12px;
+  }
+
+  .url-tab {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    padding: 5px 14px;
+    border-radius: 100px;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    transition: all 0.15s;
+  }
+  .url-tab:hover { border-color: var(--cyan); color: var(--cyan); }
+  .url-tab.active { background: var(--cyan-dim); border-color: var(--cyan); color: var(--cyan); }
+
+  .url-hint { font-size: 12px; color: var(--label); }
+  .url-hint code {
+    background: var(--surface);
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-family: monospace;
+    font-size: 11px;
+    color: var(--muted);
+  }
+
+  /* STREAM LIST (right sidebar) */
+  .stream-sidebar {
+    width: 320px;
+    flex-shrink: 0;
+    background: var(--surface);
+    border-left: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .stream-sidebar-header {
+    padding: 14px 16px 10px;
+    border-bottom: 1px solid var(--border);
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  .stream-sidebar-list {
+    flex: 1;
+    overflow-y: auto;
+  }
+
+  .stream-sidebar-list::-webkit-scrollbar { width: 4px; }
+  .stream-sidebar-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  .stream-card-small {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    cursor: pointer;
+    border-bottom: 1px solid rgba(31,45,69,0.5);
+    transition: background 0.15s;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .stream-card-small:hover { background: var(--surface2); }
+  .stream-card-small.playing { background: var(--cyan-dim); border-left: 2px solid var(--cyan); }
+
+  .sc-thumb {
+    width: 72px;
+    height: 42px;
+    background: var(--surface2);
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .sc-thumb-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 5px;
+  }
+
+  .sc-live {
+    position: absolute;
+    bottom: 2px;
+    right: 2px;
+    background: var(--coral);
+    color: #fff;
+    font-size: 8px;
+    font-weight: 700;
+    padding: 1px 4px;
+    border-radius: 2px;
+  }
+
+  .sc-info { flex: 1; min-width: 0; }
+
+  .sc-sport {
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--cyan);
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+  }
+
+  .sc-title {
+    font-size: 13px;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .sc-meta { font-size: 11px; color: var(--muted); }
+
+  /* ERROR STATE */
+  .player-error {
+    position: absolute;
+    inset: 0;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    background: #050810;
+    color: var(--muted);
+  }
+
+  .player-error.show { display: flex; }
+  .player-error .err-icon { font-size: 40px; }
+  .player-error p { font-size: 14px; text-align: center; max-width: 320px; }
+
+  /* LOADING SPINNER */
+  .player-loading {
+    position: absolute;
+    inset: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background: rgba(5,8,16,0.85);
+    z-index: 5;
+  }
+
+  .player-loading.show { display: flex; }
+
+  .spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid var(--border);
+    border-top-color: var(--cyan);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* TOAST */
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(16px);
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 9px 18px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    opacity: 0;
+    transition: all 0.25s;
+    pointer-events: none;
+    z-index: 400;
+    white-space: nowrap;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  @media (max-width: 900px) {
+    .stream-sidebar { display: none; }
+    .nav-links { display: none; }
+  }
+
+  @media (max-width: 600px) {
+    .player-stage { aspect-ratio: 16/9; max-height: none; }
+    .player-info { padding: 10px 14px; }
+    .url-panel { margin: 10px 14px; }
+    .player-title { font-size: 16px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .live-dot::after { animation: none; }
+    .spinner { animation: none; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo">Beck<span>Stream</span></a>
+  <ul class="nav-links">
+    <li><a href="index.html">Streams</a></li>
+    <li><a href="multiview.html">MultiView</a></li>
+    <li><a href="schedule.html">Schedule</a></li>
+  </ul>
+  <div style="display:flex;gap:8px;align-items:center;">
+    <a href="index.html" class="btn-ghost">← Back</a>
+    <button class="btn-ghost" onclick="toggleFullscreen()">⛶ Fullscreen</button>
+  </div>
+</nav>
+
+<div class="watch-layout">
+
+  <!-- LEFT: PLAYER -->
+  <div class="player-column">
+
+    <!-- STAGE -->
+    <div class="player-stage" id="playerStage">
+
+      <!-- YouTube iframe -->
+      <iframe id="youtubeFrame"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowfullscreen>
+      </iframe>
+
+      <!-- HLS / native video -->
+      <video id="hlsVideo" controls playsinline></video>
+
+      <!-- Loading -->
+      <div class="player-loading" id="playerLoading">
+        <div class="spinner"></div>
+      </div>
+
+      <!-- Error -->
+      <div class="player-error" id="playerError">
+        <div class="err-icon">📡</div>
+        <p id="playerErrorMsg">Stream unavailable. Try a different source or paste a direct URL below.</p>
+        <button class="btn-ghost" onclick="retryStream()" style="margin-top:8px">↺ Retry</button>
+      </div>
+
+      <!-- Placeholder -->
+      <div class="player-placeholder" id="playerPlaceholder">
+        <div class="placeholder-icon" id="placeholderIcon">📺</div>
+        <div class="placeholder-title" id="placeholderTitle">Select a stream to watch</div>
+        <div class="placeholder-sub" id="placeholderSub">Choose a live event from the list, or paste a YouTube / HLS stream URL below.</div>
+      </div>
+
+      <!-- Live badge -->
+      <div class="live-badge-overlay" id="liveBadge">
+        <span class="live-dot"></span> LIVE
+      </div>
+
+    </div>
+
+    <!-- INFO BAR -->
+    <div class="player-info" id="playerInfo">
+      <div class="player-info-main">
+        <div class="player-sport" id="infoSport">—</div>
+        <div class="player-title" id="infoTitle">No stream selected</div>
+        <div class="player-meta" id="infoMeta">Pick a stream from the right panel or paste a URL below</div>
+      </div>
+      <div class="player-actions">
+        <button class="btn-primary" id="qualityBtn" style="display:none" onclick="toggleQuality()">HD ▾</button>
+        <button class="btn-ghost" id="muteBtn" style="display:none" onclick="toggleMute()">🔊 Mute</button>
+        <button class="btn-ghost" onclick="copyStreamLink()">🔗 Share</button>
+      </div>
+    </div>
+
+    <!-- CUSTOM URL PANEL -->
+    <div class="url-panel">
+      <h3>🔗 Stream URL <span>Advanced</span></h3>
+
+      <div class="url-type-tabs">
+        <button class="url-tab active" onclick="setUrlType('youtube', this)">▶ YouTube</button>
+        <button class="url-tab" onclick="setUrlType('hls', this)">📡 HLS / M3U8</button>
+        <button class="url-tab" onclick="setUrlType('iframe', this)">🖼 iFrame</button>
+      </div>
+
+      <div class="url-input-row">
+        <input type="text" id="urlInput" placeholder="Paste YouTube URL or video ID…" autocomplete="off" spellcheck="false">
+        <button class="btn-primary" onclick="loadCustomUrl()">Load</button>
+      </div>
+
+      <div class="url-hint" id="urlHint">
+        Paste a YouTube URL like <code>youtube.com/watch?v=ID</code> or just the video ID. Works with live streams and videos.
+      </div>
+    </div>
+
+  </div>
+
+  <!-- RIGHT: STREAM LIST -->
+  <div class="stream-sidebar">
+    <div class="stream-sidebar-header">Live Now &amp; Upcoming</div>
+    <div class="stream-sidebar-list" id="streamSidebarList"></div>
+  </div>
+
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ─── STREAM CATALOGUE ────────────────────────────────────
+// youtubeId: real YouTube live stream / video IDs
+// hlsUrl: direct .m3u8 URL (add your own)
+// iframeUrl: any embeddable URL
+const catalogue = [
+  {
+    id: 1,
+    emoji: "⚽",
+    sport: "Soccer",
+    title: "La Liga — Real Madrid vs. Atletico",
+    league: "La Liga · Live",
+    live: true,
+    type: "youtube",
+    // ESPN FC live YouTube channel
+    youtubeId: "jfKfPfyJRdk",  // lofi hip hop fallback — replace with real live ID
+    viewers: "92.4k"
+  },
+  {
+    id: 2,
+    emoji: "🏀",
+    sport: "Basketball",
+    title: "NBA Finals — Lakers vs. Celtics",
+    league: "NBA Finals · Game 5 · Live",
+    live: true,
+    type: "youtube",
+    youtubeId: "jfKfPfyJRdk",
+    viewers: "141k"
+  },
+  {
+    id: 3,
+    emoji: "🎾",
+    sport: "Tennis",
+    title: "Wimbledon SF — Djokovic vs. Alcaraz",
+    league: "Wimbledon 2026 · Live",
+    live: true,
+    type: "youtube",
+    youtubeId: "jfKfPfyJRdk",
+    viewers: "58.1k"
+  },
+  {
+    id: 4,
+    emoji: "🏒",
+    sport: "Hockey",
+    title: "Stanley Cup Finals — Rangers vs. Oilers",
+    league: "NHL · Game 3 · Live",
+    live: true,
+    type: "youtube",
+    youtubeId: "jfKfPfyJRdk",
+    viewers: "34.7k"
+  },
+  {
+    id: 5,
+    emoji: "🏎",
+    sport: "F1",
+    title: "British GP — Qualifying",
+    league: "Formula 1 · Live",
+    live: true,
+    type: "youtube",
+    // F1 official YouTube sometimes embeds qualifying
+    youtubeId: "jfKfPfyJRdk",
+    viewers: "44.1k"
+  },
+  {
+    id: 6,
+    emoji: "⛳",
+    sport: "Golf",
+    title: "US Open — Final Round",
+    league: "USGA · Live",
+    live: true,
+    type: "youtube",
+    youtubeId: "jfKfPfyJRdk",
+    viewers: "19.3k"
+  },
+  {
+    id: 7,
+    emoji: "🥊",
+    sport: "MMA",
+    title: "UFC 316 Main Card",
+    league: "UFC · Pay-Per-View",
+    live: true,
+    type: "youtube",
+    youtubeId: "jfKfPfyJRdk",
+    viewers: "87.2k"
+  },
+  {
+    id: 8,
+    emoji: "🏈",
+    sport: "Football",
+    title: "Chiefs vs. Eagles — NFL Preseason",
+    league: "NFL Preseason · Upcoming",
+    live: false,
+    type: "youtube",
+    youtubeId: "jfKfPfyJRdk",
+    viewers: null
+  },
+  // ── DEMO: Real public streams ─────────────────────────
+  {
+    id: 9,
+    emoji: "🚀",
+    sport: "Space",
+    title: "NASA Live — Earth Views from ISS",
+    league: "NASA · 24/7 Live",
+    live: true,
+    type: "youtube",
+    youtubeId: "P9C25Un7xaM",   // NASA ISS live feed — real public stream
+    viewers: "Live"
+  },
+  {
+    id: 10,
+    emoji: "📺",
+    sport: "News",
+    title: "Bloomberg Markets — Live",
+    league: "Bloomberg TV · 24/7",
+    live: true,
+    type: "youtube",
+    youtubeId: "dp8PhLsUcFE",   // Bloomberg live — real
+    viewers: "Live"
+  },
+  {
+    id: 11,
+    emoji: "🌊",
+    sport: "Demo",
+    title: "HLS Demo Stream (Akamai)",
+    league: "HLS Test · Public",
+    live: true,
+    type: "hls",
+    hlsUrl: "https://multiplatform-f.akamaihd.net/i/multi/will/bunny/big_buck_bunny_,640x360_400,640x360_700,640x360_1000,950x540_1500,.f4v.csmil/master.m3u8",
+    viewers: "Demo"
+  },
+];
+
+// ─── STATE ───────────────────────────────────────────────
+let currentStream = null;
+let urlType = 'youtube';
+let isMuted = false;
+let hlsInstance = null;
+let lastUrl = null;
+
+// ─── RENDER SIDEBAR ──────────────────────────────────────
+function renderSidebar() {
+  const list = document.getElementById('streamSidebarList');
+  list.innerHTML = '';
+  catalogue.forEach(s => {
+    const card = document.createElement('div');
+    card.className = 'stream-card-small' + (currentStream?.id === s.id ? ' playing' : '');
+    card.innerHTML = `
+      <div class="sc-thumb">
+        <span>${s.emoji}</span>
+        ${s.live ? '<span class="sc-live">LIVE</span>' : ''}
+      </div>
+      <div class="sc-info">
+        <div class="sc-sport">${s.sport}</div>
+        <div class="sc-title">${s.title}</div>
+        <div class="sc-meta">${s.league}${s.viewers ? ' · 👁 ' + s.viewers : ''}</div>
+      </div>
+    `;
+    card.addEventListener('click', () => loadStream(s));
+    list.appendChild(card);
+  });
+}
+
+// ─── LOAD STREAM ─────────────────────────────────────────
+function loadStream(stream) {
+  currentStream = stream;
+  showLoading(true);
+  hideError();
+
+  // Update info bar
+  document.getElementById('infoSport').textContent = stream.emoji + ' ' + stream.sport;
+  document.getElementById('infoTitle').textContent = stream.title;
+  document.getElementById('infoMeta').textContent = stream.league + (stream.viewers ? ' · 👁 ' + stream.viewers : '');
+  document.getElementById('liveBadge').classList.toggle('show', stream.live);
+  document.getElementById('muteBtn').style.display = 'inline-flex';
+
+  hidePlaceholder();
+  renderSidebar();
+
+  if (stream.type === 'youtube') {
+    loadYouTube(stream.youtubeId);
+  } else if (stream.type === 'hls') {
+    loadHLS(stream.hlsUrl);
+  } else if (stream.type === 'iframe') {
+    loadIframe(stream.iframeUrl);
+  }
+}
+
+// ─── YOUTUBE ─────────────────────────────────────────────
+function loadYouTube(id) {
+  stopHLS();
+  const video = document.getElementById('hlsVideo');
+  const frame = document.getElementById('youtubeFrame');
+  video.style.display = 'none';
+  video.pause();
+
+  // Extract ID from URL if needed
+  const ytId = extractYouTubeId(id) || id;
+
+  frame.src = `https://www.youtube.com/embed/${ytId}?autoplay=1&rel=0&modestbranding=1`;
+  frame.style.display = 'block';
+
+  frame.onload = () => showLoading(false);
+  // Fallback: hide loader after 3s
+  setTimeout(() => showLoading(false), 3000);
+
+  document.getElementById('qualityBtn').style.display = 'none';
+  lastUrl = `https://youtube.com/watch?v=${ytId}`;
+}
+
+function extractYouTubeId(input) {
+  const patterns = [
+    /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/|youtube\.com\/live\/)([a-zA-Z0-9_-]{11})/,
+    /^([a-zA-Z0-9_-]{11})$/
+  ];
+  for (const p of patterns) {
+    const m = input.match(p);
+    if (m) return m[1];
+  }
+  return null;
+}
+
+// ─── HLS ─────────────────────────────────────────────────
+function loadHLS(url) {
+  const frame = document.getElementById('youtubeFrame');
+  frame.src = '';
+  frame.style.display = 'none';
+
+  const video = document.getElementById('hlsVideo');
+  video.style.display = 'block';
+
+  stopHLS();
+
+  if (Hls.isSupported()) {
+    hlsInstance = new Hls({ enableWorker: true });
+    hlsInstance.loadSource(url);
+    hlsInstance.attachMedia(video);
+    hlsInstance.on(Hls.Events.MANIFEST_PARSED, () => {
+      video.play().catch(() => {});
+      showLoading(false);
+      document.getElementById('qualityBtn').style.display = 'inline-flex';
+    });
+    hlsInstance.on(Hls.Events.ERROR, (_, data) => {
+      if (data.fatal) {
+        showLoading(false);
+        showError('HLS stream failed to load. The URL may be invalid or geo-restricted.');
+      }
+    });
+  } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+    // Safari native HLS
+    video.src = url;
+    video.addEventListener('loadedmetadata', () => {
+      video.play().catch(() => {});
+      showLoading(false);
+    });
+    video.onerror = () => showError('Stream failed. Check the URL and try again.');
+  } else {
+    showError('HLS not supported in this browser. Try Chrome or Safari.');
+    showLoading(false);
+  }
+
+  lastUrl = url;
+}
+
+function stopHLS() {
+  if (hlsInstance) {
+    hlsInstance.destroy();
+    hlsInstance = null;
+  }
+}
+
+// ─── IFRAME ──────────────────────────────────────────────
+function loadIframe(url) {
+  stopHLS();
+  const video = document.getElementById('hlsVideo');
+  video.style.display = 'none';
+  video.pause();
+
+  const frame = document.getElementById('youtubeFrame');
+  frame.src = url;
+  frame.style.display = 'block';
+  frame.onload = () => showLoading(false);
+  setTimeout(() => showLoading(false), 4000);
+  lastUrl = url;
+}
+
+// ─── CUSTOM URL LOADER ───────────────────────────────────
+function loadCustomUrl() {
+  const raw = document.getElementById('urlInput').value.trim();
+  if (!raw) { showToast('Paste a URL first.'); return; }
+
+  if (urlType === 'youtube') {
+    const id = extractYouTubeId(raw) || raw;
+    const fakeStream = {
+      id: 999, emoji: '▶', sport: 'Custom', live: true,
+      title: 'Custom YouTube Stream',
+      league: 'YouTube',
+      type: 'youtube',
+      youtubeId: id,
+      viewers: null
+    };
+    loadStream(fakeStream);
+  } else if (urlType === 'hls') {
+    if (!raw.includes('.m3u8') && !raw.includes('m3u')) {
+      showToast('⚠️ URL should end in .m3u8 for HLS streams');
+    }
+    const fakeStream = {
+      id: 999, emoji: '📡', sport: 'Custom', live: true,
+      title: 'Custom HLS Stream',
+      league: raw.length > 50 ? raw.slice(0, 50) + '…' : raw,
+      type: 'hls',
+      hlsUrl: raw,
+      viewers: null
+    };
+    loadStream(fakeStream);
+  } else if (urlType === 'iframe') {
+    const fakeStream = {
+      id: 999, emoji: '🖼', sport: 'Custom', live: true,
+      title: 'Custom Embed',
+      league: raw.length > 50 ? raw.slice(0, 50) + '…' : raw,
+      type: 'iframe',
+      iframeUrl: raw,
+      viewers: null
+    };
+    loadStream(fakeStream);
+  }
+}
+
+// ─── URL TYPE TABS ───────────────────────────────────────
+function setUrlType(type, btn) {
+  urlType = type;
+  document.querySelectorAll('.url-tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+
+  const input = document.getElementById('urlInput');
+  const hint = document.getElementById('urlHint');
+
+  if (type === 'youtube') {
+    input.placeholder = 'Paste YouTube URL or video ID…';
+    hint.innerHTML = 'Works with YouTube live streams, premieres, and videos. Paste the full URL or just the video ID.';
+  } else if (type === 'hls') {
+    input.placeholder = 'https://example.com/stream/index.m3u8';
+    hint.innerHTML = 'Paste a direct HLS stream URL ending in <code>.m3u8</code>. Works with most free stream sources.';
+  } else if (type === 'iframe') {
+    input.placeholder = 'https://embed.example.com/stream/123';
+    hint.innerHTML = 'Paste any embeddable URL. Some sites block iFrame embedding — try HLS if this fails.';
+  }
+}
+
+// ─── UI HELPERS ──────────────────────────────────────────
+function hidePlaceholder() {
+  document.getElementById('playerPlaceholder').style.display = 'none';
+}
+
+function showLoading(show) {
+  document.getElementById('playerLoading').classList.toggle('show', show);
+}
+
+function showError(msg) {
+  showLoading(false);
+  const err = document.getElementById('playerError');
+  document.getElementById('playerErrorMsg').textContent = msg;
+  err.classList.add('show');
+  hidePlaceholder();
+}
+
+function hideError() {
+  document.getElementById('playerError').classList.remove('show');
+}
+
+function retryStream() {
+  if (currentStream) loadStream(currentStream);
+}
+
+function toggleMute() {
+  const video = document.getElementById('hlsVideo');
+  isMuted = !isMuted;
+  video.muted = isMuted;
+  document.getElementById('muteBtn').textContent = isMuted ? '🔇 Unmute' : '🔊 Mute';
+}
+
+function toggleQuality() {
+  showToast('Quality selection: Auto / 1080p / 720p / 480p (connect to real HLS for multi-quality)');
+}
+
+function toggleFullscreen() {
+  const stage = document.getElementById('playerStage');
+  if (!document.fullscreenElement) {
+    stage.requestFullscreen().catch(() => document.documentElement.requestFullscreen());
+  } else {
+    document.exitFullscreen();
+  }
+}
+
+function copyStreamLink() {
+  const url = lastUrl || window.location.href;
+  navigator.clipboard.writeText(url).then(() => showToast('🔗 Stream link copied!')).catch(() => showToast('Copy failed'));
+}
+
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+// ─── KEYBOARD ────────────────────────────────────────────
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'INPUT') return;
+  if (e.key === 'f' || e.key === 'F') toggleFullscreen();
+  if (e.key === 'm' || e.key === 'M') toggleMute();
+});
+
+// ─── URL PARAMS — deep link support ─────────────────────
+// player.html?id=9  or  player.html?yt=VIDEO_ID  or  player.html?hls=URL
+// Also accepts ?title=...&sport=...&meta=... from homepage cards
+function handleUrlParams() {
+  const p = new URLSearchParams(window.location.search);
+
+  // Override placeholder text with passed metadata
+  const title  = p.get('title');
+  const sport  = p.get('sport');
+  const meta   = p.get('meta');
+
+  if (title) {
+    document.getElementById('placeholderTitle').textContent = title;
+    document.getElementById('infoTitle').textContent = title;
+  }
+  if (sport) {
+    document.getElementById('infoSport').textContent = sport;
+  }
+  if (meta) {
+    document.getElementById('infoMeta').textContent = meta;
+  }
+
+  // Load by catalogue id
+  if (p.get('id')) {
+    const s = catalogue.find(x => x.id === parseInt(p.get('id')));
+    if (s) { loadStream(s); return; }
+  }
+
+  // Load YouTube by video ID
+  if (p.get('yt')) {
+    const ytId = p.get('yt');
+    document.getElementById('urlInput').value = ytId;
+    const stream = {
+      id: 999,
+      emoji: '▶',
+      sport: sport || 'Stream',
+      title: title || 'Live Stream',
+      league: meta || 'BeckStream',
+      live: true,
+      type: 'youtube',
+      youtubeId: ytId,
+      viewers: null
+    };
+    // Try to find it in catalogue first for richer data
+    const match = catalogue.find(x => x.youtubeId === ytId);
+    loadStream(match || stream);
+    return;
+  }
+
+  // Load HLS
+  if (p.get('hls')) {
+    const hlsUrl = p.get('hls');
+    document.getElementById('urlInput').value = hlsUrl;
+    loadStream({
+      id: 999, emoji: '📡', sport: sport || 'Stream',
+      title: title || 'Live Stream', league: meta || 'HLS Stream',
+      live: true, type: 'hls', hlsUrl, viewers: null
+    });
+    return;
+  }
+
+  // Load iframe
+  if (p.get('iframe')) {
+    loadStream({
+      id: 999, emoji: '🖼', sport: sport || 'Stream',
+      title: title || 'Live Stream', league: meta || 'Embed',
+      live: true, type: 'iframe', iframeUrl: p.get('iframe'), viewers: null
+    });
+  }
+}
+
+// ─── INIT ────────────────────────────────────────────────
+renderSidebar();
+handleUrlParams();
+
+// Enter key on URL input
+document.getElementById('urlInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') loadCustomUrl();
+});
+</script>
+</body>
+</html>

@@ -665,10 +665,6 @@
   <p>© 2026 StreamVault. Free · No Login · No BS</p>
 </footer>
 
-<!-- MODAL -->
-<div class="modal-overlay" id="modal" onclick="closeModal(event)">
-  <div class="modal">
-    <div class="modal-video" id="modalEmoji">📺</div>
     <div class="modal-info">
       <h2 id="modalTitle">Stream Title</h2>
       <p id="modalMeta">Loading stream…</p>
@@ -679,21 +675,24 @@
 
 <script>
 const liveEvents = [
-  { emoji: "⚽", sport: "Soccer", title: "Real Madrid vs. Barcelona", meta: "La Liga · Matchday 38", badge: "live", viewers: "92.4k" },
-  { emoji: "🏀", sport: "Basketball", title: "Lakers vs. Celtics", meta: "NBA Finals · Game 5", badge: "live", viewers: "141k" },
-  { emoji: "🎾", sport: "Tennis", title: "Djokovic vs. Alcaraz", meta: "Wimbledon Semifinal", badge: "live", viewers: "58.1k" },
-  { emoji: "🏒", sport: "Hockey", title: "Rangers vs. Oilers", meta: "Stanley Cup Finals · Game 3", badge: "live", viewers: "34.7k" },
-  { emoji: "🥊", sport: "MMA", title: "Jones vs. Aspinall", meta: "UFC 316 · Main Event", badge: "upcoming", viewers: null, time: "Starts 8:00 PM" },
-  { emoji: "⚾", sport: "Baseball", title: "Yankees vs. Dodgers", meta: "MLB Regular Season", badge: "live", viewers: "28.9k" },
-  { emoji: "🏈", sport: "Football", title: "Chiefs vs. Eagles", meta: "NFL Preseason Week 1", badge: "upcoming", viewers: null, time: "Starts 7:30 PM" },
-  { emoji: "🏊", sport: "Swimming", title: "World Aquatics Championships", meta: "200m Freestyle Final", badge: "live", viewers: "12.3k" },
+  { id: 1,  emoji: "⚽", sport: "Soccer",     title: "Real Madrid vs. Barcelona",      meta: "La Liga · Matchday 38",         badge: "live",     viewers: "92.4k", youtubeId: "jfKfPfyJRdk" },
+  { id: 2,  emoji: "🏀", sport: "Basketball", title: "Lakers vs. Celtics",              meta: "NBA Finals · Game 5",            badge: "live",     viewers: "141k",  youtubeId: "jfKfPfyJRdk" },
+  { id: 3,  emoji: "🎾", sport: "Tennis",     title: "Djokovic vs. Alcaraz",            meta: "Wimbledon Semifinal",            badge: "live",     viewers: "58.1k", youtubeId: "jfKfPfyJRdk" },
+  { id: 4,  emoji: "🏒", sport: "Hockey",     title: "Rangers vs. Oilers",              meta: "Stanley Cup Finals · Game 3",   badge: "live",     viewers: "34.7k", youtubeId: "jfKfPfyJRdk" },
+  { id: 5,  emoji: "🥊", sport: "MMA",        title: "Jones vs. Aspinall",              meta: "UFC 316 · Main Event",           badge: "upcoming", viewers: null,    time: "Starts 8:00 PM", youtubeId: "jfKfPfyJRdk" },
+  { id: 6,  emoji: "⚾", sport: "Baseball",   title: "Yankees vs. Dodgers",             meta: "MLB Regular Season",             badge: "live",     viewers: "28.9k", youtubeId: "jfKfPfyJRdk" },
+  { id: 7,  emoji: "🏈", sport: "Football",   title: "Chiefs vs. Eagles",               meta: "NFL Preseason Week 1",           badge: "upcoming", viewers: null,    time: "Starts 7:30 PM", youtubeId: "jfKfPfyJRdk" },
+  { id: 8,  emoji: "🏊", sport: "Swimming",   title: "World Aquatics Championships",    meta: "200m Freestyle Final",           badge: "live",     viewers: "12.3k", youtubeId: "P9C25Un7xaM" },
+  // Real public streams
+  { id: 9,  emoji: "🚀", sport: "Space",      title: "NASA Live — Earth from the ISS",  meta: "NASA · 24/7 Live",              badge: "live",     viewers: "Live",  youtubeId: "P9C25Un7xaM" },
+  { id: 10, emoji: "📺", sport: "News",       title: "Bloomberg Markets Live",           meta: "Bloomberg TV · 24/7",           badge: "live",     viewers: "Live",  youtubeId: "dp8PhLsUcFE" },
 ];
 
 const replays = [
-  { emoji: "⚽", sport: "Soccer", title: "Man City vs. Arsenal", meta: "Premier League · 2 hours ago", badge: "replay" },
-  { emoji: "🏀", sport: "Basketball", title: "Warriors vs. Bucks", meta: "NBA Playoffs · Game 4 · Yesterday", badge: "replay" },
-  { emoji: "🏈", sport: "Football", title: "Super Bowl LVIX Full Match", meta: "NFL · Feb 2026", badge: "replay" },
-  { emoji: "🎾", sport: "Tennis", title: "French Open Men's Final", meta: "Grand Slam · 3 days ago", badge: "replay" },
+  { id: 11, emoji: "⚽", sport: "Soccer",     title: "Man City vs. Arsenal",            meta: "Premier League · 2 hours ago",  badge: "replay", youtubeId: "jfKfPfyJRdk" },
+  { id: 12, emoji: "🏀", sport: "Basketball", title: "Warriors vs. Bucks",              meta: "NBA Playoffs · Game 4 · Yesterday", badge: "replay", youtubeId: "jfKfPfyJRdk" },
+  { id: 13, emoji: "🏈", sport: "Football",   title: "Super Bowl LVIX Full Match",      meta: "NFL · Feb 2026",                badge: "replay", youtubeId: "jfKfPfyJRdk" },
+  { id: 14, emoji: "🎾", sport: "Tennis",     title: "French Open Men's Final",         meta: "Grand Slam · 3 days ago",       badge: "replay", youtubeId: "jfKfPfyJRdk" },
 ];
 
 const channels = [
@@ -707,10 +706,20 @@ const channels = [
   { emoji: "🧒", name: "Cartoon Network", genre: "Kids" },
 ];
 
+function playerUrl(item) {
+  const base = 'player.html';
+  const params = new URLSearchParams();
+  if (item.youtubeId) params.set('yt', item.youtubeId);
+  if (item.title) params.set('title', item.title);
+  if (item.sport) params.set('sport', item.sport);
+  if (item.meta) params.set('meta', item.meta);
+  return base + '?' + params.toString();
+}
+
 function createCard(item) {
   const card = document.createElement('a');
   card.className = 'stream-card';
-  card.href = '#';
+  card.href = playerUrl(item);
 
   let badgeHTML = '';
   if (item.badge === 'live') {
@@ -722,7 +731,7 @@ function createCard(item) {
   }
 
   const viewerHTML = item.viewers
-    ? `<span class="viewer-count">👁 ${item.viewers}</span>`
+    ? `<span class="viewer-count">&#128065; ${item.viewers}</span>`
     : '';
 
   card.innerHTML = `
@@ -740,28 +749,19 @@ function createCard(item) {
     </div>
   `;
 
-  card.addEventListener('click', (e) => {
-    e.preventDefault();
-    openModal(item);
-  });
-
   return card;
 }
 
 function createChannel(ch) {
   const card = document.createElement('a');
   card.className = 'channel-card';
-  card.href = '#';
+  card.href = 'player.html';
   card.innerHTML = `
     <div class="channel-icon">${ch.emoji}</div>
     <div class="channel-name">${ch.name}</div>
     <div class="channel-genre">${ch.genre}</div>
     <div class="channel-status"><span class="online-dot"></span>On Air</div>
   `;
-  card.addEventListener('click', (e) => {
-    e.preventDefault();
-    openModal({ title: ch.name, meta: `24/7 Channel · ${ch.genre}`, emoji: ch.emoji });
-  });
   return card;
 }
 
@@ -871,18 +871,6 @@ document.getElementById('searchInput').addEventListener('keydown', e => {
   }
 });
 
-// --- MODAL ---
-function openModal(item) {
-  document.getElementById('modalEmoji').textContent = item.emoji || '📺';
-  document.getElementById('modalTitle').textContent = item.title;
-  document.getElementById('modalMeta').textContent = item.meta + (item.badge === 'live' ? ' · Stream would load here in a real deployment.' : ' · Replay would load here in a real deployment.');
-  document.getElementById('modal').classList.add('open');
-}
-
-function closeModal(e) {
-  if (!e || e.target === document.getElementById('modal') || e.target.className === 'modal-close') {
-    document.getElementById('modal').classList.remove('open');
-  }
 }
 
 // Animate live viewer count

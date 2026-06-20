@@ -748,6 +748,7 @@ function renderGrid() {
           </div>
           <div class="slot-controls">
             <button class="slot-btn mute-btn" onclick="setAudioSlot(${i}, event)" title="Set Audio">🔊</button>
+            <button class="slot-btn" onclick="openInPlayer(${i}, event)" title="Open in Player">⛶</button>
             <button class="slot-btn" onclick="removeStream(${i}, event)" title="Remove">✕</button>
           </div>
         </div>
@@ -853,6 +854,15 @@ function clearAll() {
   renderGrid();
   updateStatusBar();
   showToast('All streams cleared.');
+}
+
+// ─── OPEN IN PLAYER ─────────────────────────────────────
+function openInPlayer(index, e) {
+  if (e) e.stopPropagation();
+  const stream = slots[index];
+  if (!stream) return;
+  const params = new URLSearchParams({ title: stream.title, sport: stream.sport, meta: stream.league });
+  window.open('player.html?' + params.toString(), '_blank');
 }
 
 // ─── SIDEBAR ────────────────────────────────────────────

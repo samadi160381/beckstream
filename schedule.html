@@ -514,10 +514,6 @@
   <p>© 2026 BeckStream. Free · No Login · No BS</p>
 </footer>
 
-<!-- MODAL -->
-<div class="modal-overlay" id="modal" onclick="closeModal(event)">
-  <div class="modal" id="modalBox">
-    <div class="modal-sport" id="modalSport">Sport</div>
     <h2 id="modalTitle">Event Title</h2>
     <div class="modal-details" id="modalDetails"></div>
     <div class="modal-actions">
@@ -728,7 +724,17 @@ function renderSchedule() {
         </div>
       `;
 
-      row.addEventListener('click', e => { e.preventDefault(); openModal(ev); });
+      // Navigate to player with stream info
+      row.addEventListener('click', e => {
+        e.preventDefault();
+        const params = new URLSearchParams({
+          title: ev.title,
+          sport: ev.sport,
+          meta: ev.league,
+          yt: 'jfKfPfyJRdk'  // replace with real YouTube IDs per event
+        });
+        window.location.href = 'player.html?' + params.toString();
+      });
       blockEl.appendChild(row);
     });
 
@@ -736,48 +742,8 @@ function renderSchedule() {
   });
 }
 
-// ─── MODAL ──────────────────────────────────────────────
-function openModal(ev) {
-  selectedEvent = ev;
-  const status = getStatus(ev);
-  document.getElementById('modalSport').textContent = ev.emoji + ' ' + ev.sport;
-  document.getElementById('modalTitle').textContent = ev.title;
 
-  const endTime = new Date(ev.date.getTime() + ev.durationMin * 60000);
-  document.getElementById('modalDetails').innerHTML = `
-    <div class="modal-detail-row"><span class="label">League / Event</span><span class="val">${ev.league}</span></div>
-    <div class="modal-detail-row"><span class="label">Start Time</span><span class="val">${ev.date.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</span></div>
-    <div class="modal-detail-row"><span class="label">End Time</span><span class="val">~${endTime.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</span></div>
-    <div class="modal-detail-row"><span class="label">Duration</span><span class="val">${formatDuration(ev.durationMin)}</span></div>
-    <div class="modal-detail-row"><span class="label">Status</span><span class="val" style="color:${status==='live'?'var(--coral)':status==='soon'?'var(--yellow)':'var(--muted)'}">${status.charAt(0).toUpperCase()+status.slice(1)}</span></div>
-  `;
 
-  const btn = document.getElementById('modalBtn');
-  if (status === 'live') { btn.textContent = '▶ Watch Now'; btn.disabled = false; }
-  else if (status === 'soon') { btn.textContent = '⏳ Starting Soon'; btn.disabled = false; }
-  else if (status === 'finished') { btn.textContent = '📼 Watch Replay'; btn.disabled = false; }
-  else { btn.textContent = '🔔 Set Reminder'; btn.disabled = false; }
-
-  document.getElementById('modal').classList.add('open');
-}
-
-function watchNow() {
-  if (!selectedEvent) return;
-  const status = getStatus(selectedEvent);
-  if (status === 'live' || status === 'soon') {
-    alert('In a real deployment, this would open the stream player for:\n' + selectedEvent.title);
-  } else if (status === 'finished') {
-    alert('In a real deployment, this would open the replay for:\n' + selectedEvent.title);
-  } else {
-    alert('Reminder set for:\n' + selectedEvent.title + '\n' + selectedEvent.date.toLocaleString());
-  }
-}
-
-function closeModal(e) {
-  if (!e || e.target === document.getElementById('modal')) {
-    document.getElementById('modal').classList.remove('open');
-  }
-}
 
 // ─── TIMEZONE LABEL ─────────────────────────────────────
 function setTimezone() {

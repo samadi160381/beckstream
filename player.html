@@ -748,8 +748,25 @@ function loadHLS(url) {
     });
     hlsInstance.on(Hls.Events.ERROR, (_, data) => {
       if (data.fatal) {
-        showLoading(false);
-        showError('HLS stream failed to load. The URL may be invalid or geo-restricted.');
+        if (!url.includes('corsproxy')) {
+          // Retry with CORS proxy
+          const proxyUrl = 'https://corsproxy.io/?' + encodeURIComponent(url);
+          hlsInstance.destroy();
+          hlsInstance = new Hls({ enableWorker: true });
+          hlsInstance.loadSource(proxyUrl);
+          hlsInstance.attachMedia(video);
+          hlsInstance.on(Hls.Events.MANIFEST_PARSED, () => {
+            video.play().catch(() => {});
+            showLoading(false);
+            document.getElementById('qualityBtn').style.display = 'inline-flex';
+          });
+          hlsInstance.on(Hls.Events.ERROR, (__, d) => {
+            if (d.fatal) { showLoading(false); showError('Stream unavailable — geo-blocked or offline. Try another channel.'); }
+          });
+        } else {
+          showLoading(false);
+          showError('Stream unavailable — geo-blocked or offline. Try another channel.');
+        }
       }
     });
   } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
@@ -759,7 +776,11 @@ function loadHLS(url) {
       video.play().catch(() => {});
       showLoading(false);
     });
-    video.onerror = () => showError('Stream failed. Check the URL and try again.');
+    video.onerror = () => {
+      const proxyUrl = 'https://corsproxy.io/?' + encodeURIComponent(url);
+      video.src = proxyUrl;
+      video.onerror = () => showError('Stream unavailable — geo-blocked or offline. Try another channel.');
+    };
   } else {
     showError('HLS not supported in this browser. Try Chrome or Safari.');
     showLoading(false);

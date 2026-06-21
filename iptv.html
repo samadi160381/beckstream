@@ -9,7 +9,11 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/hls.js/1.4.12/hls.min.js"></script>
 <style>
   *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-  :root{--bg:#0a0e1a;--surface:#111827;--surface2:#1a2236;--border:#1f2d45;--cyan:#00d4ff;--cyan-dim:rgba(0,212,255,0.12);--coral:#ff4757;--green:#2ed573;--yellow:#ffa502;--text:#e8edf5;--muted:#8892a4;--label:#4a5568}
+  :root{
+    --bg:#0a0e1a;--surface:#111827;--surface2:#1a2236;--border:#1f2d45;
+    --cyan:#00d4ff;--cyan-dim:rgba(0,212,255,0.12);--coral:#ff4757;
+    --green:#2ed573;--yellow:#ffa502;--text:#e8edf5;--muted:#8892a4;--label:#4a5568;
+  }
   html,body{height:100%}
   body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-size:15px;line-height:1.6;display:flex;flex-direction:column;min-height:100vh}
 
@@ -23,106 +27,106 @@
   .btn-ghost{background:none;border:1px solid var(--border);color:var(--muted);padding:5px 14px;border-radius:6px;font-size:13px;cursor:pointer;font-family:'Inter',sans-serif;transition:all 0.2s;text-decoration:none}
   .btn-ghost:hover{border-color:var(--cyan);color:var(--cyan)}
 
-  .app{display:flex;flex:1;overflow:hidden;min-height:0}
+  /* LAYOUT */
+  .app{display:flex;flex:1;min-height:0;overflow:hidden}
 
-  /* SIDEBAR */
+  /* SIDEBAR — fixed, does NOT re-render on channel click */
   .sidebar{width:300px;flex-shrink:0;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden}
-  .sidebar-top{padding:12px 14px;border-bottom:1px solid var(--border)}
-  .sidebar-top h2{font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:600;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between}
+  .sidebar-top{padding:12px 14px;border-bottom:1px solid var(--border);flex-shrink:0}
+  .sidebar-top h2{font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:600;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center}
+  .sidebar-count{font-size:11px;color:var(--muted);font-weight:400}
   .ch-search{width:100%;background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:8px 12px;border-radius:7px;font-size:13px;font-family:'Inter',sans-serif;outline:none;transition:border-color 0.2s}
   .ch-search:focus{border-color:var(--cyan)}
   .ch-search::placeholder{color:var(--label)}
 
-  .cat-bar{display:flex;gap:6px;padding:8px 14px;border-bottom:1px solid var(--border);overflow-x:auto;flex-shrink:0}
-  .cat-bar::-webkit-scrollbar{height:3px}
-  .cat-bar::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
-  .cat-pill{background:var(--surface2);border:1px solid var(--border);color:var(--muted);padding:4px 12px;border-radius:100px;font-size:12px;cursor:pointer;font-family:'Inter',sans-serif;transition:all 0.15s;white-space:nowrap;flex-shrink:0}
+  .cat-bar{display:flex;gap:6px;padding:8px 14px;border-bottom:1px solid var(--border);overflow-x:auto;flex-shrink:0;scrollbar-width:none}
+  .cat-bar::-webkit-scrollbar{display:none}
+  .cat-pill{background:var(--surface2);border:1px solid var(--border);color:var(--muted);padding:4px 11px;border-radius:100px;font-size:12px;cursor:pointer;font-family:'Inter',sans-serif;transition:all 0.15s;white-space:nowrap;flex-shrink:0}
   .cat-pill:hover{border-color:var(--cyan);color:var(--cyan)}
   .cat-pill.active{background:var(--cyan-dim);border-color:var(--cyan);color:var(--cyan)}
 
-  .ch-list{flex:1;overflow-y:auto}
+  /* Channel list — this never gets destroyed */
+  .ch-list{flex:1;overflow-y:auto;position:relative}
   .ch-list::-webkit-scrollbar{width:4px}
   .ch-list::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
 
-  .ch-item{display:flex;align-items:center;gap:10px;padding:9px 14px;cursor:pointer;border-bottom:1px solid rgba(31,45,69,0.4);transition:background 0.15s}
+  .ch-item{display:flex;align-items:center;gap:10px;padding:9px 14px;cursor:pointer;border-bottom:1px solid rgba(31,45,69,0.4);transition:background 0.12s;user-select:none}
   .ch-item:hover{background:var(--surface2)}
-  .ch-item.active{background:var(--cyan-dim);border-left:2px solid var(--cyan)}
-  .ch-flag{font-size:18px;width:28px;text-align:center;flex-shrink:0}
+  .ch-item.playing{background:var(--cyan-dim);border-left:2px solid var(--cyan)}
+  .ch-item.hidden{display:none}
+
+  .ch-logo{width:32px;height:22px;background:var(--surface2);border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;overflow:hidden}
+  .ch-logo img{width:100%;height:100%;object-fit:contain}
   .ch-info{flex:1;min-width:0}
   .ch-name{font-size:13px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .ch-cat{font-size:11px;color:var(--muted)}
+  .ch-sub{font-size:11px;color:var(--muted)}
   .ch-dot{width:6px;height:6px;background:var(--green);border-radius:50%;flex-shrink:0}
+  .ch-dot.offline{background:var(--coral)}
 
-  .ch-footer{font-size:11px;color:var(--muted);padding:8px 14px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+  .ch-footer{font-size:11px;color:var(--muted);padding:7px 14px;border-top:1px solid var(--border);flex-shrink:0;display:flex;justify-content:space-between}
 
-  /* PLAYER */
+  /* PLAYER COLUMN */
   .player-col{flex:1;display:flex;flex-direction:column;min-width:0;overflow:hidden}
-  .video-stage{position:relative;background:#000;width:100%;aspect-ratio:16/9;max-height:calc(100vh - 56px - 110px);overflow:hidden;flex-shrink:0}
-  #mainVideo{width:100%;height:100%;background:#000;display:none}
 
-  .stage-overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:20px;text-align:center}
-  .stage-placeholder{background:rgba(5,8,16,0.95)}
-  .stage-placeholder .icon{font-size:48px;margin-bottom:4px}
-  .stage-placeholder h3{font-family:'Space Grotesk',sans-serif;font-size:16px;color:var(--text)}
-  .stage-placeholder p{font-size:13px;color:var(--muted);max-width:280px}
+  .video-stage{position:relative;background:#000;width:100%;aspect-ratio:16/9;max-height:calc(100vh - 56px - 108px);flex-shrink:0;overflow:hidden}
+  #mainVideo{position:absolute;inset:0;width:100%;height:100%;background:#000;display:none}
 
-  .stage-loading{background:rgba(5,8,16,0.85);display:none}
-  .stage-loading.show{display:flex}
-  .spinner{width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--cyan);border-radius:50%;animation:spin 0.8s linear infinite}
+  /* overlays */
+  .overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:20px;text-align:center;transition:opacity 0.2s}
+  #placeholderOverlay{background:#050810}
+  #placeholderOverlay .big{font-size:44px;margin-bottom:4px}
+  #placeholderOverlay h3{font-family:'Space Grotesk',sans-serif;font-size:16px;color:var(--text)}
+  #placeholderOverlay p{font-size:13px;color:var(--muted);max-width:260px}
+  #loadingOverlay{background:rgba(5,8,16,0.88);display:none}
+  #loadingOverlay.show{display:flex}
+  #errorOverlay{background:rgba(5,8,16,0.92);display:none}
+  #errorOverlay.show{display:flex}
+  #errorOverlay .eicon{font-size:30px}
+  #errorOverlay p{font-size:13px;color:var(--muted);max-width:280px}
+
+  .spinner{width:34px;height:34px;border:3px solid var(--border);border-top-color:var(--cyan);border-radius:50%;animation:spin 0.8s linear infinite}
   @keyframes spin{to{transform:rotate(360deg)}}
 
-  .stage-error{background:rgba(5,8,16,0.95);display:none}
-  .stage-error.show{display:flex}
-  .stage-error .err-icon{font-size:32px}
-  .stage-error p{font-size:13px;color:var(--muted);max-width:300px}
+  .live-badge{position:absolute;top:10px;left:10px;background:var(--coral);color:#fff;font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;letter-spacing:0.8px;display:none;align-items:center;gap:4px;z-index:2}
+  .live-badge.show{display:flex}
+  .ldot{width:5px;height:5px;background:#fff;border-radius:50%;position:relative}
+  .ldot::after{content:'';position:absolute;inset:-2px;border-radius:50%;border:1px solid #fff;animation:radar 1.4s ease-out infinite}
+  @keyframes radar{0%{opacity:.8;transform:scale(1)}100%{opacity:0;transform:scale(2.5)}}
 
-  .live-badge{position:absolute;top:10px;left:10px;background:var(--coral);color:#fff;font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;letter-spacing:0.8px;display:flex;align-items:center;gap:4px}
-  .live-dot{width:5px;height:5px;background:#fff;border-radius:50%;position:relative}
-  .live-dot::after{content:'';position:absolute;inset:-2px;border-radius:50%;border:1px solid #fff;animation:radar 1.4s ease-out infinite}
-  @keyframes radar{0%{opacity:0.8;transform:scale(1)}100%{opacity:0;transform:scale(2.5)}}
-
-  /* INFO */
-  .player-info{background:var(--surface);border-bottom:1px solid var(--border);padding:10px 18px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;flex-shrink:0}
+  /* INFO BAR */
+  .info-bar{background:var(--surface);border-bottom:1px solid var(--border);padding:10px 18px;display:flex;align-items:center;gap:14px;flex-shrink:0;min-height:60px}
   .info-main{flex:1;min-width:0}
   .info-cat{font-size:11px;font-weight:700;color:var(--cyan);text-transform:uppercase;letter-spacing:0.5px}
-  .info-title{font-family:'Space Grotesk',sans-serif;font-size:17px;font-weight:700;letter-spacing:-0.3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .info-meta{font-size:12px;color:var(--muted)}
+  .info-title{font-family:'Space Grotesk',sans-serif;font-size:17px;font-weight:700;letter-spacing:-0.3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .info-sub{font-size:12px;color:var(--muted)}
   .info-actions{display:flex;gap:8px;flex-shrink:0}
-  .btn-primary{background:var(--cyan);color:#0a0e1a;border:none;padding:7px 16px;border-radius:7px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;transition:opacity 0.2s}
-  .btn-primary:hover{opacity:0.85}
 
-  /* PROXY ROW */
-  .proxy-row{display:flex;align-items:center;gap:10px;padding:10px 18px;background:rgba(255,165,2,0.07);border-bottom:1px solid rgba(255,165,2,0.2);flex-shrink:0;flex-wrap:wrap}
+  /* PROXY BAR */
+  .proxy-bar{display:flex;align-items:center;gap:10px;padding:8px 18px;background:rgba(255,165,2,0.06);border-bottom:1px solid rgba(255,165,2,0.18);flex-shrink:0;flex-wrap:wrap}
   .proxy-label{font-size:12px;color:var(--yellow);font-weight:600;white-space:nowrap}
-  .proxy-status{font-size:11px;padding:2px 8px;border-radius:100px;font-weight:600;white-space:nowrap}
-  .proxy-status.ok{background:rgba(46,213,115,0.15);color:var(--green);border:1px solid rgba(46,213,115,0.3)}
-  .proxy-status.missing{background:rgba(255,165,2,0.15);color:var(--yellow);border:1px solid rgba(255,165,2,0.3)}
-  .proxy-input{flex:1;min-width:180px;background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:6px 10px;border-radius:6px;font-size:12px;font-family:monospace;outline:none}
+  .proxy-badge{font-size:11px;padding:2px 8px;border-radius:100px;font-weight:600;white-space:nowrap}
+  .proxy-badge.ok{background:rgba(46,213,115,0.15);color:var(--green);border:1px solid rgba(46,213,115,0.3)}
+  .proxy-badge.no{background:rgba(255,165,2,0.15);color:var(--yellow);border:1px solid rgba(255,165,2,0.3)}
+  .proxy-input{flex:1;min-width:160px;background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:5px 10px;border-radius:6px;font-size:12px;font-family:monospace;outline:none;transition:border-color 0.2s}
   .proxy-input:focus{border-color:var(--cyan)}
 
   /* CUSTOM URL */
-  .custom-bar{display:flex;gap:8px;padding:10px 18px;background:var(--surface);border-top:1px solid var(--border);flex-shrink:0}
+  .custom-bar{display:flex;gap:8px;padding:8px 18px;background:var(--surface);border-top:1px solid var(--border);flex-shrink:0}
   .custom-bar input{flex:1;background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:7px 12px;border-radius:7px;font-size:13px;font-family:'Inter',sans-serif;outline:none}
   .custom-bar input:focus{border-color:var(--cyan)}
   .custom-bar input::placeholder{color:var(--label)}
-
-  /* LOADING SCREEN */
-  .loading-screen{position:absolute;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;z-index:10}
-  .loading-screen.hidden{display:none}
-  .loading-screen p{font-size:13px;color:var(--muted)}
-  .progress-bar{width:200px;height:3px;background:var(--border);border-radius:2px;overflow:hidden}
-  .progress-fill{height:100%;background:var(--cyan);border-radius:2px;transition:width 0.3s;width:0%}
+  .btn-primary{background:var(--cyan);color:#0a0e1a;border:none;padding:7px 16px;border-radius:7px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif}
+  .btn-primary:hover{opacity:0.85}
 
   .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(16px);background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:9px 18px;border-radius:8px;font-size:13px;font-weight:500;opacity:0;transition:all 0.25s;pointer-events:none;z-index:400;white-space:nowrap}
   .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
   @media(max-width:768px){
-    .sidebar{width:100%;max-height:35vh;border-right:none;border-bottom:1px solid var(--border)}
+    .sidebar{width:100%;max-height:38vh;border-right:none;border-bottom:1px solid var(--border)}
     .app{flex-direction:column}
     .nav-links{display:none}
-    .video-stage{max-height:none;aspect-ratio:16/9}
+    .video-stage{max-height:none}
   }
-  @media(prefers-reduced-motion:reduce){.live-dot::after,.spinner{animation:none}}
 </style>
 </head>
 <body>
@@ -140,78 +144,67 @@
 
 <div class="app">
 
-  <!-- SIDEBAR -->
+  <!-- SIDEBAR — rendered once, filtered with CSS display:none -->
   <div class="sidebar">
     <div class="sidebar-top">
-      <h2>
-        <span>📺 IPTV Channels</span>
-        <span id="totalCount" style="font-size:11px;color:var(--muted);font-weight:400"></span>
-      </h2>
-      <input class="ch-search" type="text" id="chSearch" placeholder="Search channels…" oninput="filterChannels()">
+      <h2>📺 IPTV Channels <span class="sidebar-count" id="sidebarCount"></span></h2>
+      <input class="ch-search" id="chSearch" type="text" placeholder="Search channels…" oninput="filterChannels()">
     </div>
     <div class="cat-bar" id="catBar"></div>
-    <div class="ch-list" id="chList">
-      <!-- Loading screen -->
-      <div class="loading-screen" id="loadingScreen">
-        <div class="spinner"></div>
-        <p id="loadingMsg">Loading channels…</p>
-        <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
-      </div>
-    </div>
+    <div class="ch-list" id="chList"></div>
     <div class="ch-footer">
-      <span id="chCount">0 channels</span>
-      <button class="btn-ghost" style="padding:3px 10px;font-size:11px" onclick="reloadPlaylist()">↺ Refresh</button>
+      <span id="chCount">Loading…</span>
+      <button class="btn-ghost" style="padding:3px 10px;font-size:11px" onclick="reloadAll()">↺ Reload</button>
     </div>
   </div>
 
   <!-- PLAYER -->
   <div class="player-col">
-    <div class="video-stage" id="videoStage">
+    <div class="video-stage">
       <video id="mainVideo" controls playsinline></video>
 
-      <div class="stage-overlay stage-loading" id="stageLoading">
-        <div class="spinner"></div>
-      </div>
-
-      <div class="stage-overlay stage-error" id="stageError">
-        <div class="err-icon">📡</div>
-        <p id="stageErrorMsg">Stream failed to load.</p>
-        <button class="btn-ghost" onclick="retryStream()" style="margin-top:6px">↺ Retry</button>
-      </div>
-
-      <div class="stage-overlay stage-placeholder" id="stagePlaceholder">
-        <div class="icon">📺</div>
+      <div class="overlay" id="placeholderOverlay">
+        <div class="big">📺</div>
         <h3>Select a channel</h3>
-        <p>Pick a channel from the left. Make sure your Cloudflare proxy is set below.</p>
+        <p>Tap any channel from the left sidebar to start streaming.</p>
       </div>
 
-      <div class="live-badge"><span class="live-dot"></span>LIVE</div>
+      <div class="overlay" id="loadingOverlay">
+        <div class="spinner"></div>
+        <p style="font-size:13px;color:var(--muted);margin-top:8px" id="loadingMsg">Connecting…</p>
+      </div>
+
+      <div class="overlay" id="errorOverlay">
+        <div class="eicon">📡</div>
+        <p id="errorMsg">Stream failed.</p>
+        <button class="btn-ghost" onclick="retry()" style="margin-top:8px">↺ Retry</button>
+      </div>
+
+      <div class="live-badge" id="liveBadge"><span class="ldot"></span>LIVE</div>
     </div>
 
-    <div class="player-info">
+    <div class="info-bar">
       <div class="info-main">
         <div class="info-cat" id="infoCat">—</div>
         <div class="info-title" id="infoTitle">No channel selected</div>
-        <div class="info-meta" id="infoMeta">Select a channel from the sidebar</div>
+        <div class="info-sub" id="infoSub">Pick a channel from the sidebar</div>
       </div>
       <div class="info-actions">
         <button class="btn-ghost" onclick="toggleFS()">⛶</button>
       </div>
     </div>
 
-    <!-- PROXY ROW -->
-    <div class="proxy-row">
-      <span class="proxy-label">⚡ Cloudflare Proxy</span>
-      <span class="proxy-status" id="proxyStatus">Not set</span>
+    <div class="proxy-bar">
+      <span class="proxy-label">⚡ Proxy</span>
+      <span class="proxy-badge no" id="proxyBadge">Not set</span>
       <input class="proxy-input" id="proxyInput" type="text"
         placeholder="https://beckstream-proxy.iwi16031981.workers.dev"
-        oninput="updateProxy()" autocomplete="off" spellcheck="false">
+        oninput="saveProxy()">
     </div>
 
-    <!-- CUSTOM URL -->
     <div class="custom-bar">
-      <input type="text" id="customUrl" placeholder="Paste any M3U8 URL to play directly…">
-      <button class="btn-primary" onclick="playCustomUrl()">▶ Play</button>
+      <input type="text" id="customUrl" placeholder="Paste any M3U8 URL to test…">
+      <button class="btn-primary" onclick="playCustom()">▶ Play</button>
     </div>
   </div>
 </div>
@@ -219,163 +212,171 @@
 <div class="toast" id="toast"></div>
 
 <script>
-// ── CONFIG ───────────────────────────────────────────────
-// iptv-org GitHub playlists — updated daily, 40k+ channels
-const PLAYLISTS = {
-  news:          'https://iptv-org.github.io/iptv/categories/news.m3u',
-  sports:        'https://iptv-org.github.io/iptv/categories/sports.m3u',
-  entertainment: 'https://iptv-org.github.io/iptv/categories/entertainment.m3u',
-  music:         'https://iptv-org.github.io/iptv/categories/music.m3u',
-  kids:          'https://iptv-org.github.io/iptv/categories/kids.m3u',
-  documentary:   'https://iptv-org.github.io/iptv/categories/documentary.m3u',
-  movies:        'https://iptv-org.github.io/iptv/categories/movies.m3u',
-};
-
-const CATEGORY_ICONS = {
-  news:'📰', sports:'⚽', entertainment:'🎬', music:'🎵',
-  kids:'🧒', documentary:'🔬', movies:'🎥', all:'📺'
-};
-
 // ── PROXY ─────────────────────────────────────────────────
 let PROXY = localStorage.getItem('bs_proxy') || '';
 
-function updateProxy() {
-  PROXY = document.getElementById('proxyInput').value.trim().replace(/\/$/,'');
+function saveProxy() {
+  PROXY = document.getElementById('proxyInput').value.trim().replace(/\/+$/, '');
   localStorage.setItem('bs_proxy', PROXY);
-  updateProxyStatus();
+  updateProxyBadge();
 }
 
-function updateProxyStatus() {
-  const el = document.getElementById('proxyStatus');
-  if (PROXY) {
-    el.textContent = '✓ Connected';
-    el.className = 'proxy-status ok';
-  } else {
-    el.textContent = 'Not set';
-    el.className = 'proxy-status missing';
-  }
+function updateProxyBadge() {
+  const b = document.getElementById('proxyBadge');
+  b.textContent = PROXY ? '✓ Connected' : 'Not set';
+  b.className = 'proxy-badge ' + (PROXY ? 'ok' : 'no');
 }
 
-function proxyUrl(url) {
-  if (!PROXY) return url;
-  return PROXY + '/proxy?url=' + encodeURIComponent(url);
+function proxify(url) {
+  return PROXY ? PROXY + '/proxy?url=' + encodeURIComponent(url) : url;
 }
 
-// ── STATE ─────────────────────────────────────────────────
+// ── DATA ─────────────────────────────────────────────────
+const SOURCES = [
+  { cat: 'news',          url: 'https://iptv-org.github.io/iptv/categories/news.m3u' },
+  { cat: 'sports',        url: 'https://iptv-org.github.io/iptv/categories/sports.m3u' },
+  { cat: 'entertainment', url: 'https://iptv-org.github.io/iptv/categories/entertainment.m3u' },
+  { cat: 'music',         url: 'https://iptv-org.github.io/iptv/categories/music.m3u' },
+  { cat: 'kids',          url: 'https://iptv-org.github.io/iptv/categories/kids.m3u' },
+  { cat: 'documentary',   url: 'https://iptv-org.github.io/iptv/categories/documentary.m3u' },
+  { cat: 'movies',        url: 'https://iptv-org.github.io/iptv/categories/movies.m3u' },
+];
+
+const CAT_ICONS = { news:'📰', sports:'⚽', entertainment:'🎬', music:'🎵', kids:'🧒', documentary:'🔬', movies:'🎥' };
+
 let allChannels = [];
-let filtered = [];
 let activeCategory = 'all';
 let currentChannel = null;
 let hlsInstance = null;
 
-// ── PARSE M3U ─────────────────────────────────────────────
-function parseM3U(text) {
+// ── PARSE M3U ────────────────────────────────────────────
+function parseM3U(text, cat) {
   const lines = text.split('\n');
-  const channels = [];
-  let current = null;
-
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i].trim();
+  const result = [];
+  let meta = null;
+  for (const raw of lines) {
+    const line = raw.trim();
     if (line.startsWith('#EXTINF')) {
-      const nameMatch = line.match(/,(.+)$/);
-      const groupMatch = line.match(/group-title="([^"]*)"/i);
-      const logoMatch = line.match(/tvg-logo="([^"]*)"/i);
-      const countryMatch = line.match(/tvg-country="([^"]*)"/i);
-      current = {
-        name: nameMatch ? nameMatch[1].trim() : 'Unknown',
-        group: groupMatch ? groupMatch[1] : 'General',
-        logo: logoMatch ? logoMatch[1] : '',
-        country: countryMatch ? countryMatch[1] : '',
-      };
-    } else if (line.startsWith('http') && current) {
-      current.url = line;
-      channels.push(current);
-      current = null;
+      const name  = (line.match(/,(.+)$/) || [])[1]?.trim() || 'Unknown';
+      const logo  = (line.match(/tvg-logo="([^"]*)"/) || [])[1] || '';
+      const group = (line.match(/group-title="([^"]*)"/) || [])[1] || cat;
+      const country = (line.match(/tvg-country="([^"]*)"/) || [])[1] || '';
+      meta = { name, logo, group, country, cat };
+    } else if (line.startsWith('http') && meta) {
+      meta.url = line;
+      result.push(meta);
+      meta = null;
     }
   }
-  return channels;
+  return result;
 }
 
-// ── LOAD PLAYLISTS ────────────────────────────────────────
-async function loadPlaylist(category, url) {
+// ── LOAD ─────────────────────────────────────────────────
+async function loadSource(src) {
   try {
-    const proxyFetch = PROXY
-      ? PROXY + '/proxy?url=' + encodeURIComponent(url)
-      : url;
-
-    const res = await fetch(proxyFetch);
-    if (!res.ok) throw new Error('HTTP ' + res.status);
-    const text = await res.text();
-    const channels = parseM3U(text);
-    return channels.map(ch => ({ ...ch, category }));
-  } catch (e) {
-    console.warn('Failed to load ' + category + ':', e.message);
+    const res = await fetch(proxify(src.url));
+    if (!res.ok) throw new Error(res.status);
+    return parseM3U(await res.text(), src.cat);
+  } catch(e) {
+    console.warn('Failed:', src.cat, e.message);
     return [];
   }
 }
 
-async function loadAllPlaylists() {
-  const categories = Object.keys(PLAYLISTS);
-  let loaded = 0;
+async function loadAll() {
+  document.getElementById('chCount').textContent = 'Loading…';
   allChannels = [];
 
-  setLoadingMsg('Connecting to iptv-org…');
-  setProgress(5);
-
-  // Load categories in parallel batches
-  for (let i = 0; i < categories.length; i++) {
-    const cat = categories[i];
-    setLoadingMsg('Loading ' + cat + ' channels…');
-    const channels = await loadPlaylist(cat, PLAYLISTS[cat]);
-    allChannels = allChannels.concat(channels);
-    loaded++;
-    setProgress(Math.round((loaded / categories.length) * 90) + 5);
-  }
-
-  setProgress(100);
+  // Load all playlists concurrently
+  const results = await Promise.all(SOURCES.map(loadSource));
+  results.forEach(arr => allChannels.push(...arr));
 
   if (allChannels.length === 0) {
-    setLoadingMsg('⚠️ Could not load channels. Set your Cloudflare proxy and refresh.');
-    setTimeout(() => hideLoadingScreen(), 2000);
-    showToast('Set your proxy URL below and tap ↺ Refresh');
+    document.getElementById('chCount').textContent = '⚠️ No channels loaded — check proxy';
+    toast('Make sure your proxy URL is set correctly');
     return;
   }
 
-  hideLoadingScreen();
   buildCatBar();
+  buildChannelList();
+  toast('✅ ' + allChannels.length.toLocaleString() + ' channels loaded');
+}
+
+function reloadAll() {
+  document.getElementById('chList').innerHTML = '<div style="padding:20px;color:var(--muted);font-size:13px;text-align:center">Loading…</div>';
+  loadAll();
+}
+
+// ── BUILD CHANNEL LIST (once) ────────────────────────────
+function buildChannelList() {
+  const list = document.getElementById('chList');
+  list.innerHTML = '';
+
+  allChannels.forEach((ch, i) => {
+    const el = document.createElement('div');
+    el.className = 'ch-item';
+    el.dataset.idx = i;
+    el.dataset.cat = ch.cat;
+    el.dataset.name = ch.name.toLowerCase();
+    el.dataset.country = (ch.country || '').toLowerCase();
+
+    const icon = CAT_ICONS[ch.cat] || '📺';
+    el.innerHTML = `
+      <div class="ch-logo">
+        ${ch.logo
+          ? `<img src="${ch.logo}" alt="" loading="lazy" onerror="this.parentElement.innerHTML='${icon}'">`
+          : icon}
+      </div>
+      <div class="ch-info">
+        <div class="ch-name">${ch.name}</div>
+        <div class="ch-sub">${ch.cat}${ch.country ? ' · ' + ch.country : ''}</div>
+      </div>
+      <div class="ch-dot"></div>`;
+
+    el.addEventListener('click', () => {
+      // Remove playing class from previous
+      document.querySelectorAll('.ch-item.playing').forEach(e => e.classList.remove('playing'));
+      el.classList.add('playing');
+      currentChannel = ch;
+      playChannel(ch);
+    });
+
+    list.appendChild(el);
+  });
+
+  updateCounts();
+  document.getElementById('sidebarCount').textContent = allChannels.length.toLocaleString() + ' total';
+}
+
+// ── FILTER — uses CSS hidden class, doesn't destroy DOM ──
+function filterChannels() {
+  const q = document.getElementById('chSearch').value.toLowerCase();
+  let visible = 0;
+
+  document.querySelectorAll('.ch-item').forEach(el => {
+    const catMatch = activeCategory === 'all' || el.dataset.cat === activeCategory;
+    const qMatch = !q || el.dataset.name.includes(q) || el.dataset.country.includes(q);
+    const show = catMatch && qMatch;
+    el.classList.toggle('hidden', !show);
+    if (show) visible++;
+  });
+
+  document.getElementById('chCount').textContent = visible.toLocaleString() + ' channels';
+}
+
+function updateCounts() {
   filterChannels();
-  showToast('✅ ' + allChannels.length.toLocaleString() + ' channels loaded!');
 }
 
-function setLoadingMsg(msg) {
-  document.getElementById('loadingMsg').textContent = msg;
-}
-
-function setProgress(pct) {
-  document.getElementById('progressFill').style.width = pct + '%';
-}
-
-function hideLoadingScreen() {
-  document.getElementById('loadingScreen').classList.add('hidden');
-}
-
-function reloadPlaylist() {
-  document.getElementById('loadingScreen').classList.remove('hidden');
-  document.getElementById('loadingMsg').textContent = 'Reloading…';
-  document.getElementById('progressFill').style.width = '0%';
-  allChannels = [];
-  loadAllPlaylists();
-}
-
-// ── CATEGORY BAR ──────────────────────────────────────────
+// ── CAT BAR ──────────────────────────────────────────────
 function buildCatBar() {
   const bar = document.getElementById('catBar');
   bar.innerHTML = '';
-  const cats = ['all', ...Object.keys(PLAYLISTS)];
+  const cats = ['all', ...SOURCES.map(s => s.cat)];
   cats.forEach(cat => {
     const btn = document.createElement('button');
-    btn.className = 'cat-pill' + (cat === activeCategory ? ' active' : '');
-    btn.textContent = (CATEGORY_ICONS[cat] || '') + ' ' + cat.charAt(0).toUpperCase() + cat.slice(1);
+    btn.className = 'cat-pill' + (cat === 'all' ? ' active' : '');
+    btn.textContent = (CAT_ICONS[cat] || '📺') + ' ' + cat.charAt(0).toUpperCase() + cat.slice(1);
     btn.onclick = () => {
       activeCategory = cat;
       document.querySelectorAll('.cat-pill').forEach(p => p.classList.remove('active'));
@@ -386,134 +387,105 @@ function buildCatBar() {
   });
 }
 
-// ── FILTER ────────────────────────────────────────────────
-function filterChannels() {
-  const q = document.getElementById('chSearch').value.toLowerCase();
-
-  filtered = allChannels.filter(ch => {
-    const catMatch = activeCategory === 'all' || ch.category === activeCategory;
-    const qMatch = !q || ch.name.toLowerCase().includes(q) ||
-      (ch.group && ch.group.toLowerCase().includes(q)) ||
-      (ch.country && ch.country.toLowerCase().includes(q));
-    return catMatch && qMatch;
-  });
-
-  renderChannels();
-  document.getElementById('totalCount').textContent = allChannels.length.toLocaleString() + ' total';
-  document.getElementById('chCount').textContent = filtered.length.toLocaleString() + ' channels';
-}
-
-// ── RENDER CHANNELS ───────────────────────────────────────
-function renderChannels() {
-  const list = document.getElementById('chList');
-  // Keep loading screen if present
-  const ls = document.getElementById('loadingScreen');
-  list.innerHTML = '';
-  if (!ls.classList.contains('hidden')) list.appendChild(ls);
-
-  // Virtual render — only show first 200 for performance
-  const visible = filtered.slice(0, 200);
-
-  visible.forEach(ch => {
-    const item = document.createElement('div');
-    item.className = 'ch-item' + (currentChannel === ch ? ' active' : '');
-
-    const icon = CATEGORY_ICONS[ch.category] || '📺';
-    item.innerHTML = `
-      <div class="ch-flag">${ch.logo ? `<img src="${ch.logo}" style="width:28px;height:20px;object-fit:contain;border-radius:2px" onerror="this.parentElement.textContent='${icon}'">` : icon}</div>
-      <div class="ch-info">
-        <div class="ch-name">${ch.name}</div>
-        <div class="ch-cat">${ch.category} ${ch.country ? '· ' + ch.country : ''}</div>
-      </div>
-      <div class="ch-dot"></div>`;
-
-    item.onclick = () => playChannel(ch);
-    list.appendChild(item);
-  });
-
-  if (filtered.length > 200) {
-    const more = document.createElement('div');
-    more.style.cssText = 'padding:10px 14px;font-size:12px;color:var(--muted);text-align:center';
-    more.textContent = `Showing 200 of ${filtered.length.toLocaleString()} — search to narrow results`;
-    list.appendChild(more);
-  }
-}
-
-// ── PLAY ──────────────────────────────────────────────────
+// ── PLAYER ───────────────────────────────────────────────
 function playChannel(ch) {
-  currentChannel = ch;
-  renderChannels();
-
-  document.getElementById('infoCat').textContent = (CATEGORY_ICONS[ch.category] || '📺') + ' ' + ch.category;
+  document.getElementById('placeholderOverlay').style.display = 'none';
+  document.getElementById('errorOverlay').classList.remove('show');
+  document.getElementById('infoCat').textContent = (CAT_ICONS[ch.cat] || '') + ' ' + ch.cat;
   document.getElementById('infoTitle').textContent = ch.name;
-  document.getElementById('infoMeta').textContent = 'Live · ' + ch.group + (ch.country ? ' · ' + ch.country : '');
-  document.getElementById('stagePlaceholder').style.display = 'none';
-  document.getElementById('stageError').classList.remove('show');
+  document.getElementById('infoSub').textContent = 'Live · ' + ch.group + (ch.country ? ' · ' + ch.country : '');
+  document.getElementById('liveBadge').classList.add('show');
+  showLoading('Connecting to ' + ch.name + '…');
 
-  const streamUrl = proxyUrl(ch.url);
-  loadHLS(streamUrl);
+  const url = proxify(ch.url);
+  loadHLS(url);
 }
 
 function loadHLS(url) {
-  showStageLoading(true);
   const video = document.getElementById('mainVideo');
   video.style.display = 'block';
   if (hlsInstance) { hlsInstance.destroy(); hlsInstance = null; }
+  video.src = '';
 
   if (Hls.isSupported()) {
-    hlsInstance = new Hls({ enableWorker: true, lowLatencyMode: true });
+    hlsInstance = new Hls({
+      enableWorker: true,
+      lowLatencyMode: true,
+      maxBufferLength: 10,
+      maxMaxBufferLength: 20,
+    });
     hlsInstance.loadSource(url);
     hlsInstance.attachMedia(video);
     hlsInstance.on(Hls.Events.MANIFEST_PARSED, () => {
-      video.play().catch(()=>{});
-      showStageLoading(false);
+      hideLoading();
+      video.play().catch(() => {});
     });
-    hlsInstance.on(Hls.Events.ERROR, (_, data) => {
-      if (data.fatal) {
-        showStageLoading(false);
+    hlsInstance.on(Hls.Events.ERROR, (_, d) => {
+      if (d.fatal) {
+        hideLoading();
         if (!PROXY) {
-          showStageError('Stream blocked (CORS). Paste your Cloudflare proxy URL below and retry.');
+          showError('Stream blocked (CORS). Paste your Cloudflare proxy URL in the bar below, then retry.');
         } else {
-          showStageError('Stream failed — channel may be offline or geo-restricted. Try another.');
+          markOffline();
+          showError('Stream offline or geo-restricted. Try the next channel.');
         }
       }
     });
   } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+    // Safari native HLS
     video.src = url;
-    video.onloadedmetadata = () => { video.play().catch(()=>{}); showStageLoading(false); };
-    video.onerror = () => { showStageLoading(false); showStageError('Stream failed to load.'); };
+    video.onloadedmetadata = () => { hideLoading(); video.play().catch(()=>{}); };
+    video.onerror = () => { hideLoading(); markOffline(); showError('Stream failed. Try another channel.'); };
   } else {
-    showStageLoading(false);
-    showStageError('HLS not supported. Use Chrome or Safari.');
+    hideLoading();
+    showError('HLS not supported. Use Chrome or Safari.');
   }
 }
 
-function retryStream() {
+function markOffline() {
+  // Mark current channel dot red
+  const playing = document.querySelector('.ch-item.playing .ch-dot');
+  if (playing) playing.classList.add('offline');
+}
+
+function retry() {
   if (currentChannel) playChannel(currentChannel);
 }
 
-function playCustomUrl() {
+function playCustom() {
   const url = document.getElementById('customUrl').value.trim();
-  if (!url) { showToast('Paste an M3U8 URL first.'); return; }
-  const fakeCh = { name:'Custom Stream', category:'custom', group:'Custom', country:'', url, logo:'' };
-  playChannel(fakeCh);
+  if (!url) { toast('Paste an M3U8 URL first'); return; }
+  currentChannel = { name: 'Custom Stream', cat: 'custom', group: 'Custom', country: '', url };
+  document.getElementById('infoTitle').textContent = 'Custom Stream';
+  document.getElementById('infoCat').textContent = '📡 custom';
+  document.getElementById('infoSub').textContent = url.length > 60 ? url.slice(0,60)+'…' : url;
+  document.getElementById('placeholderOverlay').style.display = 'none';
+  showLoading('Connecting…');
+  loadHLS(proxify(url));
 }
 
+// ── UI HELPERS ───────────────────────────────────────────
+function showLoading(msg) {
+  document.getElementById('loadingMsg').textContent = msg || 'Connecting…';
+  document.getElementById('loadingOverlay').classList.add('show');
+  document.getElementById('errorOverlay').classList.remove('show');
+}
+function hideLoading() {
+  document.getElementById('loadingOverlay').classList.remove('show');
+}
+function showError(msg) {
+  hideLoading();
+  document.getElementById('errorMsg').textContent = msg;
+  document.getElementById('errorOverlay').classList.add('show');
+}
 function toggleFS() {
-  if (!document.fullscreenElement) document.getElementById('videoStage').requestFullscreen().catch(()=>{});
+  const stage = document.querySelector('.video-stage');
+  if (!document.fullscreenElement) stage.requestFullscreen().catch(()=>{});
   else document.exitFullscreen();
 }
 
-// ── UI ────────────────────────────────────────────────────
-function showStageLoading(show) {
-  document.getElementById('stageLoading').classList.toggle('show', show);
-}
-function showStageError(msg) {
-  document.getElementById('stageErrorMsg').textContent = msg;
-  document.getElementById('stageError').classList.add('show');
-}
 let toastTimer;
-function showToast(msg) {
+function toast(msg) {
   const t = document.getElementById('toast');
   t.textContent = msg;
   t.classList.add('show');
@@ -521,22 +493,14 @@ function showToast(msg) {
   toastTimer = setTimeout(() => t.classList.remove('show'), 3000);
 }
 
-// ── INIT ──────────────────────────────────────────────────
-// Load saved proxy
-const saved = localStorage.getItem('bs_proxy');
-if (saved) {
-  PROXY = saved;
-  document.getElementById('proxyInput').value = saved;
+// ── INIT ─────────────────────────────────────────────────
+const savedProxy = localStorage.getItem('bs_proxy');
+if (savedProxy) {
+  PROXY = savedProxy;
+  document.getElementById('proxyInput').value = savedProxy;
 }
-updateProxyStatus();
-
-// Pre-fill proxy input with their worker URL if not already set
-if (!PROXY) {
-  document.getElementById('proxyInput').placeholder = 'https://beckstream-proxy.iwi16031981.workers.dev';
-}
-
-buildCatBar();
-loadAllPlaylists();
+updateProxyBadge();
+loadAll();
 </script>
 </body>
 </html>

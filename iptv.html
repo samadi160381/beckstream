@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IPTV Channels — BeckStream</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hls.js/1.4.12/hls.min.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg:#0a0e1a; --surface:#111827; --surface2:#1a2236; --border:#1f2d45;
+    --cyan:#00d4ff; --cyan-dim:rgba(0,212,255,0.12); --coral:#ff4757;
+    --green:#2ed573; --text:#e8edf5; --muted:#8892a4; --label:#4a5568;
+  }
+  html,body { height:100%; }
+  body { background:var(--bg); color:var(--text); font-family:'Inter',sans-serif; font-size:15px; line-height:1.6; display:flex; flex-direction:column; min-height:100vh; }
+
+  nav { position:sticky; top:0; z-index:100; display:flex; align-items:center; justify-content:space-between; padding:0 24px; height:56px; background:rgba(10,14,26,0.97); backdrop-filter:blur(12px); border-bottom:1px solid var(--border); }
+  .nav-logo { font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:20px; color:var(--cyan); text-decoration:none; }
+  .nav-logo span { color:var(--text); }
+  .nav-links { display:flex; gap:24px; list-style:none; }
+  .nav-links a { color:var(--muted); text-decoration:none; font-size:14px; font-weight:500; transition:color 0.2s; }
+  .nav-links a:hover { color:var(--text); }
+  .nav-links .active { color:var(--cyan); }
+  .btn-ghost { background:none; border:1px solid var(--border); color:var(--muted); padding:5px 14px; border-radius:6px; font-size:13px; cursor:pointer; font-family:'Inter',sans-serif; transition:all 0.2s; text-decoration:none; }
+  .btn-ghost:hover { border-color:var(--cyan); color:var(--cyan); }
+
+  /* LAYOUT */
+  .app { display:flex; flex:1; overflow:hidden; min-height:0; }
+
+  /* SIDEBAR */
+  .ch-sidebar { width:300px; flex-shrink:0; background:var(--surface); border-right:1px solid var(--border); display:flex; flex-direction:column; overflow:hidden; }
+  .ch-sidebar-top { padding:14px 16px; border-bottom:1px solid var(--border); }
+  .ch-sidebar-top h2 { font-family:'Space Grotesk',sans-serif; font-size:15px; font-weight:600; margin-bottom:10px; }
+  .ch-search { width:100%; background:var(--surface2); border:1px solid var(--border); color:var(--text); padding:8px 12px; border-radius:7px; font-size:13px; font-family:'Inter',sans-serif; outline:none; transition:border-color 0.2s; }
+  .ch-search:focus { border-color:var(--cyan); }
+  .ch-search::placeholder { color:var(--label); }
+
+  /* CATEGORY PILLS */
+  .cat-pills { display:flex; gap:6px; flex-wrap:wrap; padding:10px 14px; border-bottom:1px solid var(--border); }
+  .cat-pill { background:var(--surface2); border:1px solid var(--border); color:var(--muted); padding:4px 12px; border-radius:100px; font-size:12px; cursor:pointer; font-family:'Inter',sans-serif; transition:all 0.15s; white-space:nowrap; }
+  .cat-pill:hover { border-color:var(--cyan); color:var(--cyan); }
+  .cat-pill.active { background:var(--cyan-dim); border-color:var(--cyan); color:var(--cyan); }
+
+  /* CHANNEL LIST */
+  .ch-list { flex:1; overflow-y:auto; }
+  .ch-list::-webkit-scrollbar { width:4px; }
+  .ch-list::-webkit-scrollbar-thumb { background:var(--border); border-radius:2px; }
+
+  .ch-item { display:flex; align-items:center; gap:12px; padding:10px 14px; cursor:pointer; border-bottom:1px solid rgba(31,45,69,0.4); transition:background 0.15s; }
+  .ch-item:hover { background:var(--surface2); }
+  .ch-item.active { background:var(--cyan-dim); border-left:2px solid var(--cyan); }
+
+  .ch-logo { width:40px; height:28px; background:var(--surface2); border-radius:4px; display:flex; align-items:center; justify-content:center; font-size:16px; flex-shrink:0; overflow:hidden; }
+  .ch-logo img { width:100%; height:100%; object-fit:contain; }
+  .ch-info { flex:1; min-width:0; }
+  .ch-name { font-size:13px; font-weight:500; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .ch-cat { font-size:11px; color:var(--muted); }
+  .ch-live-dot { width:6px; height:6px; background:var(--green); border-radius:50%; flex-shrink:0; }
+
+  .ch-count { font-size:11px; color:var(--muted); padding:8px 14px; border-top:1px solid var(--border); }
+
+  /* PLAYER */
+  .player-area { flex:1; display:flex; flex-direction:column; min-width:0; overflow:hidden; }
+
+  .video-stage { position:relative; background:#000; width:100%; aspect-ratio:16/9; max-height:calc(100vh - 56px - 120px); overflow:hidden; flex-shrink:0; }
+  #mainVideo { width:100%; height:100%; background:#000; display:none; }
+
+  .stage-placeholder { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; color:var(--muted); }
+  .stage-placeholder .big-icon { font-size:52px; }
+  .stage-placeholder h3 { font-family:'Space Grotesk',sans-serif; font-size:18px; color:var(--text); }
+  .stage-placeholder p { font-size:13px; text-align:center; max-width:300px; }
+
+  .stage-loading { position:absolute; inset:0; background:rgba(5,8,16,0.85); display:none; align-items:center; justify-content:center; z-index:5; }
+  .stage-loading.show { display:flex; }
+  .spinner { width:36px; height:36px; border:3px solid var(--border); border-top-color:var(--cyan); border-radius:50%; animation:spin 0.8s linear infinite; }
+  @keyframes spin { to { transform:rotate(360deg); } }
+
+  .stage-error { position:absolute; inset:0; background:rgba(5,8,16,0.92); display:none; flex-direction:column; align-items:center; justify-content:center; gap:12px; padding:24px; text-align:center; z-index:4; }
+  .stage-error.show { display:flex; }
+  .stage-error .err-icon { font-size:36px; }
+  .stage-error p { font-size:14px; color:var(--muted); max-width:320px; }
+
+  .live-badge { position:absolute; top:12px; left:12px; background:var(--coral); color:#fff; font-size:10px; font-weight:700; padding:3px 9px; border-radius:4px; letter-spacing:0.8px; display:none; align-items:center; gap:5px; }
+  .live-badge.show { display:flex; }
+  .live-dot { width:5px; height:5px; background:#fff; border-radius:50%; position:relative; }
+  .live-dot::after { content:''; position:absolute; inset:-2px; border-radius:50%; border:1px solid #fff; animation:radar 1.4s ease-out infinite; }
+  @keyframes radar { 0%{opacity:0.8;transform:scale(1)} 100%{opacity:0;transform:scale(2.5)} }
+
+  /* INFO BAR */
+  .player-info { background:var(--surface); border-bottom:1px solid var(--border); padding:12px 20px; display:flex; align-items:center; gap:16px; flex-wrap:wrap; }
+  .info-main { flex:1; min-width:0; }
+  .info-cat { font-size:11px; font-weight:700; color:var(--cyan); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:2px; }
+  .info-title { font-family:'Space Grotesk',sans-serif; font-size:18px; font-weight:700; letter-spacing:-0.3px; }
+  .info-meta { font-size:12px; color:var(--muted); }
+  .info-actions { display:flex; gap:8px; }
+  .btn-primary { background:var(--cyan); color:#0a0e1a; border:none; padding:8px 18px; border-radius:7px; font-size:13px; font-weight:700; cursor:pointer; font-family:'Inter',sans-serif; transition:opacity 0.2s; }
+  .btn-primary:hover { opacity:0.85; }
+
+  /* PROXY BANNER */
+  .proxy-banner { background:rgba(255,165,2,0.08); border:1px solid rgba(255,165,2,0.25); border-radius:8px; padding:12px 16px; margin:12px 20px; font-size:13px; color:#ffa502; display:none; }
+  .proxy-banner.show { display:block; }
+  .proxy-banner a { color:var(--cyan); }
+  .proxy-banner input { background:var(--surface2); border:1px solid var(--border); color:var(--text); padding:6px 10px; border-radius:6px; font-size:12px; font-family:monospace; width:100%; margin-top:8px; outline:none; }
+  .proxy-banner input:focus { border-color:var(--cyan); }
+
+  /* CUSTOM URL */
+  .custom-url-bar { padding:12px 20px; background:var(--surface); border-top:1px solid var(--border); display:flex; gap:8px; }
+  .custom-url-bar input { flex:1; background:var(--surface2); border:1px solid var(--border); color:var(--text); padding:8px 12px; border-radius:7px; font-size:13px; font-family:'Inter',sans-serif; outline:none; }
+  .custom-url-bar input:focus { border-color:var(--cyan); }
+  .custom-url-bar input::placeholder { color:var(--label); }
+
+  /* TOAST */
+  .toast { position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(16px); background:var(--surface2); border:1px solid var(--border); color:var(--text); padding:9px 18px; border-radius:8px; font-size:13px; font-weight:500; opacity:0; transition:all 0.25s; pointer-events:none; z-index:400; white-space:nowrap; }
+  .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+
+  @media (max-width:768px) {
+    .ch-sidebar { width:100%; max-height:40vh; border-right:none; border-bottom:1px solid var(--border); }
+    .app { flex-direction:column; }
+    .nav-links { display:none; }
+    .video-stage { max-height:none; }
+  }
+  @media (prefers-reduced-motion:reduce) {
+    .live-dot::after { animation:none; }
+    .spinner { animation:none; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo">Beck<span>Stream</span></a>
+  <ul class="nav-links">
+    <li><a href="index.html">Streams</a></li>
+    <li><a href="multiview.html">MultiView</a></li>
+    <li><a href="schedule.html">Schedule</a></li>
+    <li><a href="iptv.html" class="active">IPTV</a></li>
+  </ul>
+  <a href="index.html" class="btn-ghost">← Back</a>
+</nav>
+
+<div class="app">
+
+  <!-- CHANNEL SIDEBAR -->
+  <div class="ch-sidebar">
+    <div class="ch-sidebar-top">
+      <h2>📺 IPTV Channels</h2>
+      <input class="ch-search" type="text" placeholder="Search channels…" id="chSearch" oninput="filterChannels()">
+    </div>
+    <div class="cat-pills" id="catPills"></div>
+    <div class="ch-list" id="chList"></div>
+    <div class="ch-count" id="chCount">Loading channels…</div>
+  </div>
+
+  <!-- PLAYER -->
+  <div class="player-area">
+
+    <div class="video-stage" id="videoStage">
+      <video id="mainVideo" controls playsinline></video>
+
+      <div class="stage-loading" id="stageLoading"><div class="spinner"></div></div>
+
+      <div class="stage-error" id="stageError">
+        <div class="err-icon">📡</div>
+        <p id="stageErrorMsg">Stream failed. This channel may be geo-restricted or offline. Try another channel or set up the Cloudflare proxy below.</p>
+        <button class="btn-ghost" onclick="retryStream()" style="margin-top:8px">↺ Retry</button>
+      </div>
+
+      <div class="stage-placeholder" id="stagePlaceholder">
+        <div class="big-icon">📺</div>
+        <h3>Select a channel</h3>
+        <p>Pick any channel from the left panel to start watching. Set up the Cloudflare proxy below for best results.</p>
+      </div>
+
+      <div class="live-badge show" id="liveBadge"><span class="live-dot"></span>LIVE</div>
+    </div>
+
+    <div class="player-info">
+      <div class="info-main">
+        <div class="info-cat" id="infoCat">—</div>
+        <div class="info-title" id="infoTitle">No channel selected</div>
+        <div class="info-meta" id="infoMeta">Choose a channel from the list</div>
+      </div>
+      <div class="info-actions">
+        <button class="btn-ghost" onclick="toggleFullscreen()">⛶ Fullscreen</button>
+      </div>
+    </div>
+
+    <!-- PROXY BANNER -->
+    <div class="proxy-banner show" id="proxyBanner">
+      ⚡ <strong>For best results, set up your Cloudflare proxy.</strong>
+      Most IPTV streams are blocked by browsers without it. Once deployed, paste your worker URL here:
+      <input type="text" id="proxyUrlInput" placeholder="https://your-worker.workers.dev" oninput="saveProxyUrl()" value="">
+    </div>
+
+    <!-- CUSTOM URL -->
+    <div class="custom-url-bar">
+      <input type="text" id="customUrl" placeholder="Paste any M3U8 URL to play directly…">
+      <button class="btn-primary" onclick="playCustomUrl()">▶ Play</button>
+    </div>
+
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── CONFIG ───────────────────────────────────────────────
+// Paste your Cloudflare Worker URL here after deploying
+// OR the user can paste it in the banner above
+let PROXY_URL = localStorage.getItem('beckstream_proxy') || '';
+
+function saveProxyUrl() {
+  PROXY_URL = document.getElementById('proxyUrlInput').value.trim().replace(/\/$/, '');
+  localStorage.setItem('beckstream_proxy', PROXY_URL);
+  showToast(PROXY_URL ? '✅ Proxy saved! Streams will now load.' : 'Proxy cleared.');
+}
+
+// Load saved proxy URL on startup
+window.addEventListener('load', () => {
+  const saved = localStorage.getItem('beckstream_proxy');
+  if (saved) {
+    PROXY_URL = saved;
+    document.getElementById('proxyUrlInput').value = saved;
+  }
+});
+
+function proxyStream(url) {
+  if (!PROXY_URL) return url;
+  return PROXY_URL + '/proxy?url=' + encodeURIComponent(url);
+}
+
+// ── CHANNEL DATA ─────────────────────────────────────────
+// Curated list from iptv-org and other public sources
+// Source: https://github.com/iptv-org/iptv
+const channels = [
+  // NEWS
+  { name:'Al Jazeera English',  cat:'News',          flag:'🌍', m3u8:'https://live-hls-web-aje.getaj.net/AJE/01.m3u8' },
+  { name:'Bloomberg TV',        cat:'News',          flag:'📈', m3u8:'https://bloomberg-bloomberg-1-eu.rakuten.wurl.tv/playlist.m3u8' },
+  { name:'DW English',          cat:'News',          flag:'🇩🇪', m3u8:'https://dwstream4-lh.akamaihd.net/i/dwstream4_live@124409/master.m3u8' },
+  { name:'France 24 English',   cat:'News',          flag:'🗼', m3u8:'https://stream.france24.com/hls/live/2037163/F24_EN_LO_HLS/master.m3u8' },
+  { name:'Euronews English',    cat:'News',          flag:'🇪🇺', m3u8:'https://euronews-euronews-9-eu.rakuten.wurl.tv/playlist.m3u8' },
+  { name:'Sky News',            cat:'News',          flag:'📡', m3u8:'https://skynews-skynews-1-gb.samsung.wurl.tv/manifest/playlist.m3u8' },
+  { name:'NASA TV',             cat:'Science',       flag:'🚀', m3u8:'https://ntv1.akamaized.net/hls/live/2014075/NASA-NTV1-HLS/master.m3u8' },
+  { name:'NASA TV Media',       cat:'Science',       flag:'🛸', m3u8:'https://ntv2.akamaized.net/hls/live/2014076/NASA-NTV2-HLS/master.m3u8' },
+  // SPORTS
+  { name:'beIN Sports 1',       cat:'Sports',        flag:'⚽', m3u8:'https://bein-bein1arabic-1-sa.samsung.wurl.tv/manifest/playlist.m3u8' },
+  { name:'Eurosport 1',         cat:'Sports',        flag:'🏆', m3u8:'https://eurosport-eurosport1-1-eu.rakuten.wurl.tv/playlist.m3u8' },
+  { name:'Tennis Channel',      cat:'Sports',        flag:'🎾', m3u8:'https://tennischannel-tennischannel-1-us.samsung.wurl.tv/manifest/playlist.m3u8' },
+  { name:'Fight Network',       cat:'Sports',        flag:'🥊', m3u8:'https://fightnetwork-fightnetwork-1-ca.samsung.wurl.tv/manifest/playlist.m3u8' },
+  { name:'Motor Trend',         cat:'Sports',        flag:'🏎', m3u8:'https://motortrend-motortrend-1-us.samsung.wurl.tv/manifest/playlist.m3u8' },
+  // ENTERTAINMENT
+  { name:'Pluto TV Movies',     cat:'Entertainment', flag:'🎬', m3u8:'https://service-stitcher.clusters.pluto.tv/v1/stitch/hls/channel/5a6a8dd52cd7346bd5d29248/master.m3u8?deviceId=beckstream&deviceType=web&deviceMake=Chrome&deviceModel=web&appName=web&appVersion=4.1&clientTime=0&serverSideAds=false&forwardingId=&ad.lt=0' },
+  { name:'Pluto TV Thrillers',  cat:'Entertainment', flag:'🔪', m3u8:'https://service-stitcher.clusters.pluto.tv/v1/stitch/hls/channel/5a9e4d6c67cb26bb7983e783/master.m3u8?deviceId=beckstream&deviceType=web' },
+  { name:'Pluto TV Sci-Fi',     cat:'Entertainment', flag:'🤖', m3u8:'https://service-stitcher.clusters.pluto.tv/v1/stitch/hls/channel/5c8011f0e7d96e20eda9fc0f/master.m3u8?deviceId=beckstream&deviceType=web' },
+  { name:'Pluto TV Comedy',     cat:'Entertainment', flag:'😂', m3u8:'https://service-stitcher.clusters.pluto.tv/v1/stitch/hls/channel/5f2a04e2e87665a56eb20de5/master.m3u8?deviceId=beckstream&deviceType=web' },
+  { name:'Pluto TV Action',     cat:'Entertainment', flag:'💥', m3u8:'https://service-stitcher.clusters.pluto.tv/v1/stitch/hls/channel/5af2932dd4d44b669e5f1fe2/master.m3u8?deviceId=beckstream&deviceType=web' },
+  // MUSIC
+  { name:'Mezzo Live HD',       cat:'Music',         flag:'🎵', m3u8:'https://mezzo-mezzo-1-fr.rakuten.wurl.tv/playlist.m3u8' },
+  // KIDS
+  { name:'Cartoon Network',     cat:'Kids',          flag:'🧒', m3u8:'https://cartoonnetwork-cartoonnetwork-1-us.samsung.wurl.tv/manifest/playlist.m3u8' },
+  // DOCUMENTARY
+  { name:'Curiosity Stream',    cat:'Documentary',   flag:'🔬', m3u8:'https://curiositystream-curiositystream-1-us.samsung.wurl.tv/manifest/playlist.m3u8' },
+  { name:'Nat Geo Wild',        cat:'Documentary',   flag:'🦁', m3u8:'https://natgeowild-natgeowild-1-us.samsung.wurl.tv/manifest/playlist.m3u8' },
+];
+
+// ── STATE ────────────────────────────────────────────────
+let activeCategory = 'All';
+let searchQuery = '';
+let currentChannel = null;
+let hlsInstance = null;
+
+// ── CATEGORIES ───────────────────────────────────────────
+const categories = ['All', ...new Set(channels.map(c => c.cat))];
+
+function buildCatPills() {
+  const pills = document.getElementById('catPills');
+  categories.forEach(cat => {
+    const btn = document.createElement('button');
+    btn.className = 'cat-pill' + (cat === 'All' ? ' active' : '');
+    btn.textContent = cat;
+    btn.onclick = () => {
+      document.querySelectorAll('.cat-pill').forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      activeCategory = cat;
+      filterChannels();
+    };
+    pills.appendChild(btn);
+  });
+}
+
+// ── CHANNEL LIST ─────────────────────────────────────────
+function filterChannels() {
+  const q = document.getElementById('chSearch').value.toLowerCase();
+  searchQuery = q;
+
+  const filtered = channels.filter(ch => {
+    const catMatch = activeCategory === 'All' || ch.cat === activeCategory;
+    const searchMatch = !q || ch.name.toLowerCase().includes(q) || ch.cat.toLowerCase().includes(q);
+    return catMatch && searchMatch;
+  });
+
+  renderChannels(filtered);
+}
+
+function renderChannels(list) {
+  const el = document.getElementById('chList');
+  el.innerHTML = '';
+  list.forEach(ch => {
+    const item = document.createElement('div');
+    item.className = 'ch-item' + (currentChannel === ch ? ' active' : '');
+    item.innerHTML = `
+      <div class="ch-logo">${ch.flag}</div>
+      <div class="ch-info">
+        <div class="ch-name">${ch.name}</div>
+        <div class="ch-cat">${ch.cat}</div>
+      </div>
+      <div class="ch-live-dot"></div>`;
+    item.onclick = () => playChannel(ch);
+    el.appendChild(item);
+  });
+  document.getElementById('chCount').textContent = list.length + ' channels';
+}
+
+// ── PLAYER ───────────────────────────────────────────────
+function playChannel(ch) {
+  currentChannel = ch;
+  filterChannels(); // re-render to update active state
+
+  document.getElementById('infoCat').textContent = ch.flag + ' ' + ch.cat;
+  document.getElementById('infoTitle').textContent = ch.name;
+  document.getElementById('infoMeta').textContent = 'Live · ' + ch.cat;
+  document.getElementById('stagePlaceholder').style.display = 'none';
+  document.getElementById('stageError').classList.remove('show');
+
+  const url = proxyStream(ch.m3u8);
+  loadHLS(url, ch);
+}
+
+function loadHLS(url, ch) {
+  showLoading(true);
+
+  const video = document.getElementById('mainVideo');
+  video.style.display = 'block';
+
+  if (hlsInstance) { hlsInstance.destroy(); hlsInstance = null; }
+
+  if (Hls.isSupported()) {
+    hlsInstance = new Hls({ enableWorker: true, lowLatencyMode: true });
+    hlsInstance.loadSource(url);
+    hlsInstance.attachMedia(video);
+
+    hlsInstance.on(Hls.Events.MANIFEST_PARSED, () => {
+      video.play().catch(() => {});
+      showLoading(false);
+    });
+
+    hlsInstance.on(Hls.Events.ERROR, (_, data) => {
+      if (data.fatal) {
+        showLoading(false);
+        if (!PROXY_URL) {
+          showError('Stream blocked by browser (CORS). Set up the Cloudflare proxy below to fix this.');
+        } else {
+          showError('Stream failed. This channel may be offline or geo-restricted.');
+        }
+      }
+    });
+  } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+    video.src = url;
+    video.onloadedmetadata = () => { video.play().catch(()=>{}); showLoading(false); };
+    video.onerror = () => { showLoading(false); showError('Stream failed to load.'); };
+  } else {
+    showLoading(false);
+    showError('HLS not supported. Please use Chrome or Safari.');
+  }
+}
+
+function retryStream() {
+  if (currentChannel) playChannel(currentChannel);
+}
+
+function playCustomUrl() {
+  const url = document.getElementById('customUrl').value.trim();
+  if (!url) { showToast('Paste an M3U8 URL first.'); return; }
+  const fakeCh = { name:'Custom Stream', cat:'Custom', flag:'📡', m3u8: url };
+  playChannel(fakeCh);
+}
+
+function toggleFullscreen() {
+  const stage = document.getElementById('videoStage');
+  if (!document.fullscreenElement) stage.requestFullscreen().catch(()=>{});
+  else document.exitFullscreen();
+}
+
+// ── UI HELPERS ───────────────────────────────────────────
+function showLoading(show) {
+  document.getElementById('stageLoading').classList.toggle('show', show);
+}
+
+function showError(msg) {
+  showLoading(false);
+  document.getElementById('stageErrorMsg').textContent = msg;
+  document.getElementById('stageError').classList.add('show');
+}
+
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+// ── KEYBOARD ─────────────────────────────────────────────
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'INPUT') return;
+  if (e.key === 'f' || e.key === 'F') toggleFullscreen();
+});
+
+// ── INIT ─────────────────────────────────────────────────
+buildCatPills();
+filterChannels();
+</script>
+</body>
+</html>
